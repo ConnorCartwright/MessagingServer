@@ -23,7 +23,7 @@ io.on('connection', function(socket) {
 	// listens for a new message
 	socket.on('new message', function (data) {
 		// send the message
-		socket.broadcast.emit('New message:', {
+		socket.broadcast.emit('new message', {
 			username: socket.username,
 			message: data
 		});
