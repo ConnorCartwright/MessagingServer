@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Messaging Server</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="contentContainer">
+    <div class="content">
+      <div class="loginScreenLogo">
+        <img src="https://whyevolutionistrue.files.wordpress.com/2015/02/cute-kitten-saying-hello.jpg" alt="kitten" />
+      </div>
+      <div class="loginScreenUserInput">
+        <h1>Enter Username/Join room</h1>
+        <input class="userInput usernameInput" type="text" placeholder="Enter username" maxlength="16" />
+        <input class="userInput roomInput" type="text" placeholder="Create/Join room" maxlength="16" />
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="client.js"></script>
+</body>
+</html>

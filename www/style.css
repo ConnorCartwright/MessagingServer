@@ -1,0 +1,63 @@
+html, body {
+    height: 100%;
+    width: 100%;
+    background: #EEE;
+    font-family: Arial;
+    font-size: 14px;
+    color: #333;
+}
+
+h1 {
+    font-size: 36px;
+}
+
+div.contentContainer {
+    height: 90%;
+    width: 90%;
+    margin: 5%;
+}
+
+div.content {
+    height: 100%;
+    width: 100%;
+}
+
+div.loginScreenLogo {
+    height: 200px;
+    width: 100%;
+}
+
+div.loginScreenLogo>img {
+    height: 100%;
+    max-width: 100%;
+    display: block;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+div.loginScreenUserInput {
+    width: 100%;
+    text-align: center;
+}
+
+input.userInput {
+    height: 30px;
+    width: 300px;
+    display: block;
+    margin: 12px auto;
+    text-align: center;
+    border: none;
+    border-bottom: 2px solid #CCC;
+    background: transparent;
+    transition: 0.4s;
+}
+
+input.userInput:hover {
+	border-color: #B4CDCD;
+}
+
+input.userInput:active, input.userInput:focus {
+	border-color: #388E8E;
+	outline: none;
+}
