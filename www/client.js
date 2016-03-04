@@ -11,11 +11,21 @@ $(function() {
   var typing = false;
   var $currentInput = $usernameInput.focus();
 
+  var evenRow = true;
+
   var $loginPage = $('.page.login'); // The login page
   var $chatPage = $('.page.chat'); // The chatroom page
 
   socket.on('user joined', function (data) {
     printMessage(data.username + 'joined the room.');
+    printNumUsers(data);
+  });
+
+  socket.on('login', function (data) {
+    connected = true;
+    // display welcome message
+    var $header = $('div.chatHeader>span');
+    $header.html('Hey <i>' + username + '</i>, welcome to the chat!')
     printNumUsers(data);
   });
 
@@ -25,6 +35,7 @@ $(function() {
   });
 
   socket.on('typing', function (data) {
+    console.log('socket on typing');
     userIsTyping(data);
   });
 
@@ -35,18 +46,19 @@ $(function() {
 
   // helper function to print a console message to chat 
   function printConsoleMessage(message) {
-    var $messsage = $('<li class="message consoleMessage">' + message + '</li>');
+    var $message = $('<li class="message consoleMessage">' + message + '</li>');
     $messages.append($message);
   }
 
   // helper function to print a chat message to chat 
   function printMessage(message) {
-    var $messsage = $('<li class="message chatMessage">' + message + '</li>');
+    var $message = $('<li class="message chatMessage ' + (evenRow ? 'even' : 'odd') + '"><span>' + message + '</span></li>');
+    evenRow = !evenRow;
     $messages.append($message);
   }
 
   function sendMessage() {
-    var $message = $inputMessage.val();
+    var message = $inputMessage.val();
     // if user is connected and has a message
     if (connected && message) {
         $inputMessage.val('');
@@ -79,7 +91,6 @@ $(function() {
     if (username) {
       $loginPage.fadeOut(600);
       $chatPage.fadeIn(1200)
-      $loginPage.off('click');
       $currentInput = $inputMessage.focus();
 
       // Tell the server the username
