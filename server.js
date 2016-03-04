@@ -61,7 +61,7 @@ io.on('connection', function(socket) {
 
 	// show user has stopped typing
 	socket.on('stop typing', function() {
-		socket.broadcast.emit('styop typing', {
+		socket.broadcast.emit('stop typing', {
 			username: socket.username
 		});
 	});
