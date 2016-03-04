@@ -11,8 +11,8 @@ $(function() {
   var typing = false;
   var $currentInput = $usernameInput.focus();
 
-  var $loginPage = $('login.page'); // The login page
-  var $chatPage = $('chat.page'); // The chatroom page
+  var $loginPage = $('.page.login'); // The login page
+  var $chatPage = $('.page.chat'); // The chatroom page
 
   socket.on('user joined', function (data) {
     printMessage(data.username + 'joined the room.');
@@ -72,6 +72,21 @@ $(function() {
     printMessage(data.message);
   }
 
+    // Sets the client's username
+  function setUsername () {
+    username = $usernameInput.val();
+    // if the username is valid
+    if (username) {
+      $loginPage.fadeOut(600);
+      $chatPage.fadeIn(1200)
+      $loginPage.off('click');
+      $currentInput = $inputMessage.focus();
+
+      // Tell the server the username
+      socket.emit('add user', username);
+    }
+  }
+
   $window.keydown(function(event) {
     if (event.which === 13) { // if the user pressed ENTER
       if (username) { // if the user is loggedIn
@@ -79,7 +94,7 @@ $(function() {
         socket.emit('stop typing');
         typing = false;
       } else { // else log them in
-        // TO DO setUsername();
+          setUsername();
       }
     }
   });
