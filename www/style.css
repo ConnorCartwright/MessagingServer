@@ -71,6 +71,10 @@ input.userInput:active, input.userInput:focus {
 
 /* v CHAT PAGE v */
 
+div.page.chat {
+  display: none;
+}
+
 div.chatContainer {
     height: 100%;
     width: 800px;
