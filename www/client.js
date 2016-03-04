@@ -7,14 +7,14 @@ $(function() {
 
 
   socket.on('user joined', function (data) {
-    printMessage(data.username + 'joined');
+    printMessage(data.username + 'joined the room.');
     printNumUsers(data);
   });
 
-
-
-
-
+  socket.on('user left', function (data) {
+    printMessage(data.username + 'left the room.');
+    printNumUsers(data);
+  });
 
   function printMessage(message) {
     var $messsage = $('<li class="consoleMessage">' + message + '</li>');
