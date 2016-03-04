@@ -7,6 +7,7 @@ $(function() {
   var socket = io();
 
   var username;
+  var colour;
   var connected = false;
   var typing = false;
   var lastTypingTime;
@@ -19,7 +20,7 @@ $(function() {
   var $chatPage = $('.page.chat'); // The chatroom page
 
   socket.on('user joined', function (data) {
-    printMessage(data.username + 'joined the room.');
+    printConsoleMessage(data.username + ' joined the room.');
     printNumUsers(data);
   });
 
@@ -27,28 +28,46 @@ $(function() {
     connected = true;
     // display welcome message
     var $header = $('div.chatHeader>span');
-    $header.html('Hey <i>' + username + '</i>, welcome to the chat!')
+    $header.html('Hey <i>' + username + '</i>, welcome to the chat!');
+    printConsoleMessage(username + ' joined the room.');
     printNumUsers(data);
   });
 
   socket.on('user left', function (data) {
-    printMessage(data.username + 'left the room.');
+    printConsoleMessage(data.username + ' left the room.');
     printNumUsers(data);
   });
 
   socket.on('typing', function (data) {
-    console.log('socket on typing');
     userIsTyping(data);
   });
+
+  // kill the typing message on stop typing
+  socket.on('stop typing', function (data) {
+    removeChatTyping(data);
+  });
+
+  socket.on('new message', function (data) {
+    printMessage(data);
+  });
+
+  // Removes the visual chat typing message
+  function removeChatTyping (data) {
+    getTypingMessages(data).fadeOut(function () {
+      $(this).remove();
+    });
+  }
+
+  // Gets the 'X is typing' messages of a user
+  function getTypingMessages (data) {
+    return $('.typing.message').filter(function (i) {
+      return $(this).data('username') === data.username;
+    });
+  }
 
   $inputMessage.on('input', function() {
     updateTyping();
   });
-
-  // create function for user stopped typing
-
-  // create function for new message
-
 
   // helper function to print a console message to chat 
   function printConsoleMessage(message) {
@@ -57,8 +76,14 @@ $(function() {
   }
 
   // helper function to print a chat message to chat 
-  function printMessage(message) {
-    var $message = $('<li class="message chatMessage ' + (evenRow ? 'even' : 'odd') + '"><span>' + message + '</span></li>');
+  function printMessage(data) {
+    var $message = $('<li class="message chatMessage ' + (evenRow ? 'even' : 'odd') + '" style="background-color: ' + color(data.username) + '"><span>' + data.username + ': ' + data.message + '</span></li>');
+    evenRow = !evenRow;
+    $messages.append($message);
+  }
+
+  function printTypingMessage(data) {
+    var $message = $('<li class="message typing message chatMessage ' + (evenRow ? 'even' : 'odd') + '" data-username="' + data.username + '"><span>' + data.username + data.message + '</span></li>');
     evenRow = !evenRow;
     $messages.append($message);
   }
@@ -68,7 +93,10 @@ $(function() {
     // if user is connected and has a message
     if (connected && message) {
         $inputMessage.val('');
-        printMessage(username + ': ' + message);
+        printMessage({
+          username: username,
+          message: message
+        });
         socket.emit('new message', message);
     }
   }
@@ -76,18 +104,18 @@ $(function() {
   // helper function to print the number of users in the room
   function printNumUsers(data) {
     if (data.numUsers > 1) {
-      printMessage('There are ' + data.numUsers + ' active users.');
+      printConsoleMessage('There are ' + data.numUsers + ' active users.');
     }
-    else {
-      printMessage('There is only 1 active user.');
+    else if (data.numUsers == 1)  {
+      printConsoleMessage('There is only 1 active user.');
     }
   }
 
   // helper function to show a user is typing
   function userIsTyping(data) {
     data.typing = true;
-    data.message = username + ' is typing...';
-    printMessage(data.message);
+    data.message = ' is typing...';
+    printTypingMessage(data);
   }
 
     // Sets the client's username
@@ -95,6 +123,7 @@ $(function() {
     username = $usernameInput.val();
     // if the username is valid
     if (username) {
+      colour = color(username);
       $loginPage.fadeOut(600);
       $chatPage.fadeIn(1200)
       $currentInput = $inputMessage.focus();
@@ -134,5 +163,31 @@ $(function() {
       }, typing_timeout);
     }
   }
+
+  // color and increase brightness functions taken from stack overflow
+  function color(string) {
+      return increase_brightness('#' + md5(string).slice(0, 6), 70);
+  }
+
+
+  function increase_brightness(hex, percent){
+    // strip the leading # if it's there
+    hex = hex.replace(/^\s*#|\s*$/g, '');
+
+    // convert 3 char codes --> 6, e.g. `E0F` --> `EE00FF`
+    if(hex.length == 3){
+        hex = hex.replace(/(.)/g, '$1$1');
+    }
+
+    var r = parseInt(hex.substr(0, 2), 16),
+        g = parseInt(hex.substr(2, 2), 16),
+        b = parseInt(hex.substr(4, 2), 16);
+
+    return '#' +
+       ((0|(1<<8) + r + (256 - r) * percent / 100).toString(16)).substr(1) +
+       ((0|(1<<8) + g + (256 - g) * percent / 100).toString(16)).substr(1) +
+       ((0|(1<<8) + b + (256 - b) * percent / 100).toString(16)).substr(1);
+}
+
 
 });
