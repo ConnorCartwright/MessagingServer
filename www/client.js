@@ -9,6 +9,8 @@ $(function() {
   var username;
   var connected = false;
   var typing = false;
+  var lastTypingTime;
+  var typing_timeout = 400;
   var $currentInput = $usernameInput.focus();
 
   var evenRow = true;
@@ -37,6 +39,10 @@ $(function() {
   socket.on('typing', function (data) {
     console.log('socket on typing');
     userIsTyping(data);
+  });
+
+  $inputMessage.on('input', function() {
+    updateTyping();
   });
 
   // create function for user stopped typing
@@ -80,7 +86,7 @@ $(function() {
   // helper function to show a user is typing
   function userIsTyping(data) {
     data.typing = true;
-    data.message = 'is typing...';
+    data.message = username + ' is typing...';
     printMessage(data.message);
   }
 
@@ -109,5 +115,24 @@ $(function() {
       }
     }
   });
+
+  function updateTyping () {
+    if (connected) {
+      if (!typing) {
+        typing = true;
+        socket.emit('typing');
+      }
+      lastTypingTime = (new Date()).getTime();
+
+      setTimeout(function () {
+        var typingTimer = (new Date()).getTime();
+        var timeDiff = typingTimer - lastTypingTime;
+        if (timeDiff >= typing_timeout && typing) {
+          socket.emit('stop typing');
+          typing = false;
+        }
+      }, typing_timeout);
+    }
+  }
 
 });
