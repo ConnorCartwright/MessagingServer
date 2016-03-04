@@ -3,9 +3,16 @@ $(function() {
   var $window = $(window);
   var $usernameInput = $('input.usernameInput');   // username input
   var $messages = $('ul.chatLog');              // get whole chat log element
-  var $inputMessage = $('input.newMessageInput');  // get new message input area
+  var $inputMessage = $('input.messageInput');  // get new message input area
   var socket = io();
 
+  var username;
+  var connected = false;
+  var typing = false;
+  var $currentInput = $usernameInput.focus();
+
+  var $loginPage = $('login.page'); // The login page
+  var $chatPage = $('chat.page'); // The chatroom page
 
   socket.on('user joined', function (data) {
     printMessage(data.username + 'joined the room.');
@@ -21,6 +28,10 @@ $(function() {
     userIsTyping(data);
   });
 
+  // create function for user stopped typing
+
+  // create function for new message
+
 
   // helper function to print a console message to chat 
   function printConsoleMessage(message) {
@@ -32,6 +43,16 @@ $(function() {
   function printMessage(message) {
     var $messsage = $('<li class="message chatMessage">' + message + '</li>');
     $messages.append($message);
+  }
+
+  function sendMessage() {
+    var $message = $inputMessage.val();
+    // if user is connected and has a message
+    if (connected && message) {
+        $inputMessage.val('');
+        printMessage(username + ': ' + message);
+        socket.emit('new message', message);
+    }
   }
 
   // helper function to print the number of users in the room
@@ -51,8 +72,16 @@ $(function() {
     printMessage(data.message);
   }
 
-  // create function for user stopped typing
-
-  // create function for new message
+  $window.keydown(function(event) {
+    if (event.which === 13) { // if the user pressed ENTER
+      if (username) { // if the user is loggedIn
+        sendMessage();
+        socket.emit('stop typing');
+        typing = false;
+      } else { // else log them in
+        // TO DO setUsername();
+      }
+    }
+  });
 
 });
