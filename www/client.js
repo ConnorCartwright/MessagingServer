@@ -83,7 +83,7 @@ $(function() {
   }
 
   function printTypingMessage(data) {
-    var $message = $('<li class="message typing message chatMessage ' + (evenRow ? 'even' : 'odd') + '" data-username="' + data.username + '"><span>' + data.username + data.message + '</span></li>');
+    var $message = $('<li class="message typing message chatMessage ' + (evenRow ? 'even' : 'odd') + '" data-username="' + data.username + '" style="background-color: ' + color(data.username) + '"><span>' + data.username + data.message + '</span></li>');
     evenRow = !evenRow;
     $messages.append($message);
   }
