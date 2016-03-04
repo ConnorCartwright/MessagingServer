@@ -166,7 +166,7 @@ $(function() {
 
   // color and increase brightness functions taken from stack overflow
   function color(string) {
-      return increase_brightness('#' + md5(string).slice(0, 6), 70);
+      return increase_brightness('#' + md5(string).slice(0, 6), 50);
   }
 
 
