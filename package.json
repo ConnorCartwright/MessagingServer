@@ -4,8 +4,23 @@
   "description": "socket messaging server",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "connor cartwright",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.13.4",
+    "http": "^0.0.0",
+    "socket.io": "^1.4.5"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ConnorCartwright/MessagingServer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ConnorCartwright/MessagingServer/issues"
+  },
+  "homepage": "https://github.com/ConnorCartwright/MessagingServer#readme"
 }
