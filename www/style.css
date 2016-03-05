@@ -148,6 +148,17 @@ li.message.consoleMessage>span {
 	font-weight: normal;
 }
 
+li.message.consoleMessage.numUsers {
+    background-color: rgba(60,60,60,0.4);
+    font-weight: bold;
+}
+
+li.message.consoleMessage.numUsers>span {
+    margin: 0;
+    color: #222;
+    font-weight: bold;
+}
+
 
 div.chat>div.chatHeader {
     height: 45px;
@@ -172,8 +183,8 @@ div.chat>div.messageInputDiv {
 
 div.messageInputDiv>input.messageInput {
     height: 100%;
-    width: 80%;
-    margin-left: 1.9%;
+    width: 90%;
+    margin-left: 2%;
     font-size: 20px;
     background: none;
     border: none;
@@ -182,13 +193,13 @@ div.messageInputDiv>input.messageInput {
 div.messageInputDiv>input.messageInput.send {
     height: 35px;
     line-height: 26px;
-    width: 35px;
+    width: 4%;
     margin-top: 5px;
-    margin-right: 5px;
     border: solid 2px #388E8E;
     background: #388E8E;
     color: #DDD;
     font-size: 22px;
+    right: 0;
     border-radius: 4px;
     cursor: pointer;
 }

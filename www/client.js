@@ -11,7 +11,7 @@ $(function() {
   var connected = false;
   var typing = false;
   var lastTypingTime;
-  var typing_timeout = 400;
+  var typing_timeout = 1200;
   var $currentInput = $usernameInput.focus();
 
   var evenRow = true;
@@ -53,7 +53,7 @@ $(function() {
 
   // Removes the visual chat typing message
   function removeChatTyping (data) {
-    getTypingMessages(data).fadeOut(function () {
+    getTypingMessages(data).fadeOut(200, function () {
       $(this).remove();
     });
   }
@@ -103,12 +103,18 @@ $(function() {
 
   // helper function to print the number of users in the room
   function printNumUsers(data) {
+    var $users = $('li.consoleMessage.numUsers>span');
+    var text = ""
     if (data.numUsers > 1) {
-      printConsoleMessage('There are ' + data.numUsers + ' active users.');
+
+      text = 'There are ' + data.numUsers + ' active users.';
     }
     else if (data.numUsers == 1)  {
-      printConsoleMessage('There is only 1 active user.');
+      text = 'There is only 1 active user.';
     }
+    $users.fadeOut(200, function() {
+      $(this).text(text).fadeIn(200);
+    });
   }
 
   // helper function to show a user is typing
