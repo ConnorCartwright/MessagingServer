@@ -16,19 +16,21 @@
         <h1>Enter Username/Join room</h1>
         <input class="userInput usernameInput" type="text" placeholder="Enter username" maxlength="16" autofocus />
         <input class="userInput roomInput" type="text" placeholder="Create/Join room" maxlength="16" />
+        <input class="userInput go" type="button" value="Enter"/>
       </div>
     </div>
     <div class="page chat">
       <div class="chatContainer">
-        <div class="chatHeader">
-          <span></span>
-        </div>
         <div class="chat">
+          <div class="chatHeader">
+            <span></span>
+          </div>
           <ul class="chatLog">
           </ul>
-        </div>
-        <div class="messageInputDiv">
-          <input class="messageInput" type="text" placeholder="Type here" maxlength="300" />
+          <div class="messageInputDiv">
+            <input class="messageInput message" type="text" placeholder="Type here" maxlength="300" />
+            <input class="messageInput send" type="button" value=">" />
+          </div>
         </div>
       </div>
     </div>
@@ -39,5 +41,6 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="http://blueimp.github.io/JavaScript-MD5/js/md5.js"></script>
 <script src="client.js"></script>
+
 </body>
 </html>

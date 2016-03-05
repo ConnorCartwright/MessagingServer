@@ -3,7 +3,7 @@ $(function() {
   var $window = $(window);
   var $usernameInput = $('input.usernameInput');   // username input
   var $messages = $('ul.chatLog');              // get whole chat log element
-  var $inputMessage = $('input.messageInput');  // get new message input area
+  var $inputMessage = $('input.messageInput.message');  // get new message input area
   var socket = io();
 
   var username;
@@ -143,6 +143,16 @@ $(function() {
           setUsername();
       }
     }
+  });
+
+  $('input.userInput.go').on('click', function() {
+      setUsername(); // log the user in
+  });
+
+  $('input.messageInput.send').on('click', function() {
+      sendMessage();
+      socket.emit('stop typing');
+      typing = false;
   });
 
   function updateTyping () {
