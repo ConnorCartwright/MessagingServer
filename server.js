@@ -95,14 +95,13 @@ io.on('connection', function(socket) {
 		  if (error) {
 		    switch (error.code) {
 		      case "EMAIL_TAKEN":
-		      	socket.broadcast.emit('email taken');
-		      	console.log('email taken');
+		      	socket.emit('email taken');
 		        break;
 		      case "INVALID_EMAIL":
-		      	socket.broadcast.emit('email invalid');
+		      	socket.emit('email invalid');
 		        break;
 		      default:
-		      	socket.broadcast.emit('create/login error');
+		      	socket.emit('generic error');
 		    }
 		  } 
 		  else {
@@ -120,16 +119,16 @@ io.on('connection', function(socket) {
 		  if (error) {
 		    switch (error.code) {
 		      case "INVALID_EMAIL":
-		      	socket.broadcast.emit('email invalid');
+		      	socket.emit('email invalid');
 		        break;
 		      case "INVALID_PASSWORD":
-		      	socket.broadcast.emit('password wrong');
+		      	socket.emit('password wrong');
 		        break;
 		      case "INVALID_USER":
-		      	socket.broadcast.emit('email not recognised');
+		      	socket.emit('email not recognised');
 		        break;
 		      default:
-		        socket.broadcast.emit('create/login error');
+		        socket.emit('generic error');
 		    }
 		  } 
 		  else {
@@ -146,14 +145,14 @@ io.on('connection', function(socket) {
 		  if (error) {
 		    switch (error.code) {
 		      case "INVALID_USER":
-		      	socket.broadcast.emit('email not recognised');
+		      	socket.emit('email not recognised');
 		        break;
 		      default:
-		        socket.broadcast.emit('reset error');
+		        socket.emit('generic error');
 		    }
 		  } 
 		  else {
-		    socket.broadcast.emit('reset sent');
+		    socket.emit('reset sent');
 		  }
 		});
 	});

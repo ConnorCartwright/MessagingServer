@@ -55,6 +55,57 @@ $(function() {
     loginSuccess();
   });
 
+  socket.on('email invalid', function (data) {
+    $('div.formContainer.posting input.emailInput').addClass('error');
+  });
+
+  socket.on('email taken', function (data) {
+    $('div.formContainer.posting input.emailInput').after('<div class="errorText"><span>Email already in use!</span></div>');
+    $('div.formContainer.posting').removeClass('posting');
+  });
+
+  socket.on('password wrong', function (data) {
+    $('div.formContainer.login input.passwordInput').after('<div class="errorText"><span>Wrong password</span></div>');
+    $('div.formContainer.login').removeClass('posting');
+  });
+
+  socket.on('email not recognised', function (data) {
+    $('div.formContainer.posting input.emailInput').after('<div class="errorText"><span>Email not registered.</span></div>');
+    $('div.formContainer.posting').removeClass('posting');
+  });
+
+  socket.on('generic error', function (data) {
+    $('div.formContainer.posting input.emailInput').before('<div class="errorText upper"><span>An error occurred. Please try again later.</span></div>');
+    $('div.formContainer.posting').removeClass('posting');
+  });
+
+  socket.on('reset sent', function() {
+    var $message = $('<div class="passwordReset"><span>Password reset request sent!</span></div>');
+    $message.hide();
+    $('div.formContainer.posting').append($message);
+
+    $message.fadeIn(600, function() {
+      setTimeout(function() {
+        $message.fadeOut(800, function() {
+          $('div.formContainer.login').fadeIn(400);
+          $('div.formContainer.resetPassword').fadeOut(400);
+        });
+      }, 400);
+
+    });
+
+  });
+
+  // emit reset sent
+
+
+
+
+
+
+
+
+
   // Removes the visual chat typing message
   function removeChatTyping (data) {
     getTypingMessages(data).fadeOut(200, function () {
@@ -203,6 +254,18 @@ $(function() {
     });
   }
 
+  // check email is valid
+  function validateEmail(email) {
+    var patt = new RegExp("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
+    return patt.test(email);
+  }
+
+  // check password >= 8 characters, at least 1 number, 1 lower/upper case
+  function validatePassword(password) {
+    return true; /// TO DO REMOVE
+    var patt = new RegExp("(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/)");
+    return patt.test(password);
+  }
 
   // html element bindings
 
@@ -217,44 +280,98 @@ $(function() {
   });
 
   $('div.formContainer.login input.create').on('click', function() {
+    $('div.errorText').remove();
+    $('div.formContainer input.textInput').val("");
     $('div.formContainer.login').fadeOut(400, function() {
       $('div.formContainer.createAccount').fadeIn(400);
     });
   });
 
   $('div.formContainer.createAccount div.backButton').on('click', function() {
+    $('div.errorText').remove();
+    $('div.formContainer input.textInput').val("");
     $('div.formContainer.createAccount').fadeOut(400, function() {
       $('div.formContainer.login').fadeIn(400);
     });
   });
 
   $('div.formContainer.login div.forgotPassword').on('click', function() {
-    console.log('iiiiii');
+    $('div.errorText').remove();
+    $('div.formContainer input.textInput').val("");
     $('div.formContainer.login').fadeOut(400, function() {
       $('div.formContainer.resetPassword').fadeIn(400);
     });
   });
 
   $('div.formContainer.resetPassword div.backButton').on('click', function() {
+    $('div.errorText').remove();
+    $('div.formContainer input.textInput').val("");
     $('div.formContainer.resetPassword').fadeOut(400, function() {
       $('div.formContainer.login').fadeIn(400);
     });
   });
 
   $('div.formContainer.login input.loginInput.signIn').on('click', function() {
-    var email = $('div.formContainer.login input.loginInput.emailInput').val();
-    var password = $('div.formContainer.login input.loginInput.passwordInput').val();
-    var obj = {email: email, password: password};
+    var email = $('div.formContainer.login input.loginInput.emailInput');
+    var password = $('div.formContainer.login input.loginInput.passwordInput');
+
+    $('div.formContainer.login input.error').removeClass('error');
+    $('div.errorText').remove();
+
+    if (!validateEmail(email.val())) {
+      email.addClass('error');
+      return;
+    }
+
+    if (!validatePassword(password.val())) {
+      password.addClass('error');
+      return;
+    }
+
+    $('div.formContainer.login').addClass('posting');
+
+    var obj = {email: email.val(), password: password.val()};
     socket.emit('login', obj);
   });
 
   $('div.formContainer.createAccount input.loginInput.create').on('click', function() {
-    var email = $('div.formContainer.createAccount input.loginInput.emailInput').val();
-    var password = $('div.formContainer.createAccount input.loginInput.passwordInput').val();
-    var obj = {email: email, password: password};
+    var email = $('div.formContainer.createAccount input.loginInput.emailInput');
+    var password = $('div.formContainer.createAccount input.loginInput.passwordInput');
+
+    $('div.formContainer.createAccount input.error').removeClass('error');
+    $('div.errorText').remove();
+
+    if (!validateEmail(email.val())) {
+      email.addClass('error');
+      return;
+    }
+
+    if (!validatePassword(password.val())) {
+      password.addClass('error');
+      return;
+    }
+
+    $('div.formContainer.createAccount').addClass('posting');
+
+    var obj = {email: email.val(), password: password.val()};
     socket.emit('create user', obj);
   });
 
+  $('div.formContainer.resetPassword input.loginInput.reset').on('click', function() {
+    var email = $('div.formContainer.resetPassword input.loginInput.emailInput');
+
+    $('div.formContainer.createAccount input.error').removeClass('error');
+    $('div.errorText').remove();
+
+    if (!validateEmail(email.val())) {
+      email.addClass('error');
+      return;
+    }
+
+    $('div.formContainer.resetPassword').addClass('posting');
+
+    socket.emit('password reset', email.val());
+  });
 
 
 });
