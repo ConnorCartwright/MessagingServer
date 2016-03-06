@@ -106,7 +106,8 @@ io.on('connection', function(socket) {
 		  } 
 		  else {
 		    console.log("Successfully created user account with uid:", userData.uid);
-		    socket.emit('login', obj);
+		    var obj2 = {username: getName(authData), email: obj.email};
+		    socket.emit('login', obj2);
 		  }
 		});
 	});
@@ -132,7 +133,8 @@ io.on('connection', function(socket) {
 		    }
 		  } 
 		  else {
-		  	socket.emit('login', obj);
+		  	var obj2 = {username: getName(authData), email: obj.email};
+		  	socket.emit('login', obj2);
 		    console.log("Authenticated successfully with payload:", authData);
 		  }
 		});

@@ -8,6 +8,7 @@ $(function() {
   var socket = io();
 
   var username;
+  var email;
   var colour;
   var connected = false;
   var typing = false;
@@ -52,6 +53,11 @@ $(function() {
   });
 
   socket.on('login', function (data) {
+    console.log('data username: ' + data.username);
+    console.log('data email: ' + data.email);
+    username = data.username;
+    email = data.email;
+    $('div#sidebar>div.profilePicture').append(getGravatarImage(email));
     loginSuccess();
 
   });
@@ -272,6 +278,10 @@ $(function() {
 
   // html element bindings
 
+  $('img.menuBars').on('click', function() {
+    $('#sidebar').animate({width: $('#sidebar').width() === 0 ? 210 : 0 });
+  });
+
   $('input.userInput.go').on('click', function() {
       setUsername(); // log the user in
   });
@@ -375,6 +385,10 @@ $(function() {
 
     socket.emit('password reset', email.val());
   });
+
+  function getGravatarImage() {
+    return ('<img class="displayPicture" src="https://www.secure.gravatar.com/avatar/' + md5(email.toLowerCase()) + '?r=g&s=200" alt="Avatar">');
+  }
 
 
 });
