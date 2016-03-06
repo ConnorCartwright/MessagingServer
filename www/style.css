@@ -141,6 +141,15 @@ div.loginForm input.loginInput.loginButton {
     transition: 0.4s;
 }
 
+div.loginForm div.formContainer.posting input.loginInput.loginButton, 
+div.loginForm div.formContainer.posting input.loginInput.loginButton:hover,
+div.loginForm div.formContainer.posting input.loginInput.loginButton.create,
+div.loginForm div.formContainer.posting input.loginInput.loginButton.create:hover {
+    background: #999;
+    opacity: 0.6;
+    cursor: default;
+}
+
 div.loginForm input.loginInput.loginButton:hover {
     opacity: 1;
 }
@@ -208,63 +217,42 @@ div.loginForm div.spinner {
     display: none;
 }
 
-
-
-/* ^ LOGIN PAGE ^ */
-
-
-/* v MENU PAGE v */
-
-div.loginScreenLogo {
-    height: 200px;
-    width: 100%;
+input.error {
+    box-shadow: 0 0 5px #DD4444;
 }
 
-div.loginScreenLogo>img {
+div.errorText {
+    height: 20px;
+    margin-top: -6px;
+    text-align: left;
+    color: #DD5555;
+    font-size: 14px;
+}
+
+div.formContainer.resetPassword>div.passwordReset {
     height: 100%;
-    max-width: 100%;
-    display: block;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(33,33,33,0.8);
+    z-index: 5;
+}
+
+div.formContainer.resetPassword>div.passwordReset>span {
+    position: absolute;
+    display: inline;
+    top: 45%;
+    font-size: 16px;
+    font-weight: bold;
+    text-shadow: 0 0 5px #666;
     left: 0;
     right: 0;
-    margin: auto;
+    bottom: 0;
+    color: #fff;
 }
 
-div.loginScreenUserInput {
-    width: 100%;
-    text-align: center;
-}
-
-input.userInput {
-    height: 30px;
-    width: 300px;
-    display: block;
-    margin: 12px auto;
-    text-align: center;
-    border: none;
-    border-bottom: 2px solid #CCC;
-    background: transparent;
-    transition: 0.4s;
-}
-
-input.userInput:hover {
-	border-color: #B4CDCD;
-}
-
-input.userInput:active, input.userInput:focus {
-	border-color: #388E8E;
-}
-
-input.userInput.go {
-    width: 160px;
-    border: solid 2px #388E8E;
-    background: #388E8E;
-    color: #DDD;
-    font-size: 14px;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-/* ^ MENU PAGE ^ */
+/* ^ LOGIN PAGE ^ */
 
 /* v CHAT PAGE v */
 
