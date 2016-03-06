@@ -230,7 +230,7 @@ div.errorText {
     font-size: 14px;
 }
 
-div.formContainer.resetPassword>div.passwordReset {
+div.formContainer>div.formContainerMessage {
     height: 100%;
     width: 100%;
     position: absolute;
@@ -240,7 +240,7 @@ div.formContainer.resetPassword>div.passwordReset {
     z-index: 5;
 }
 
-div.formContainer.resetPassword>div.passwordReset>span {
+div.formContainer>div.formContainerMessage>span {
     position: absolute;
     display: inline;
     top: 45%;
@@ -274,8 +274,9 @@ div#sidebar {
     position: absolute;
     right: 0;
     background: rgba(255,255,255,0.9);
-    box-shadow: -2px 5px 3px 0px rgba(0,0,0,0.75);
+    box-shadow: -2px 0px 0px 0px rgba(0,0,0,0.2);
     text-align: center;
+    overflow: hidden;
 }
 
 div#sidebar>div.profilePicture {
@@ -283,21 +284,22 @@ div#sidebar>div.profilePicture {
     width: 160px;
     margin-top: 10px;
     display: inline-block;
-    background: purple;
+    background: #333;
     border-radius: 100px;
 
 }
 
-div.profilePicture>img.displayPicture.hoverZoomLink {
+div.profilePicture>img.displayPicture {
     height: 100%;
     width: 100%;
-    display: inline-block;
+    border-radius: 100px;
 }
 
 div.friendsListContainer {
-    height: 100%;
+    height: 30%;
     width: 100%;
-    margin-top: 15px;
+    position: absolute;
+    bottom: 0;
     background: pink;
     overflow-y: scroll;
 }
@@ -319,6 +321,7 @@ ul.friendsList>li.friend {
 
 li.friend>img.friendImage {
     height: 30px;
+    border-radius: 30px;
     margin-top: 5px;
     margin-left: 5px;
 }
@@ -331,12 +334,58 @@ ul.friendsList>li.friend>span {
     margin-left: 12px;
 }
 
+div#sidebar>div.sidebarRooms {
+    height: 36px;
+    line-height: 36px;
+    width: 190px;
+    margin-left: 10px;
+    margin-top: 24px;
+}
+
+div.sidebarRooms>div.createJoinRoom {
+    height: 100%;
+    width: 90%;
+    margin-left: 5%;
+}
+
+div.createJoinRoom>input.roomInput {
+    height: 100%;
+    width: 100%;
+    display: inline-block;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 10px;
+    border: none;
+}
+
+div.createJoinRoom>input.roomInput.createJoinButton {
+    background: #BBB;
+    cursor: pointer;
+    transition: 0.4s;
+}
+
+div.createJoinRoom>input.roomInput.createJoinButton:hover {
+    background: #999;
+}
+
 div.logoTopBar>span.usernameGreeting {
     height: 50px;
     line-height: 50px;
     display: inline-block;
     font-size: 18px;
     vertical-align: top;
+}
+
+div.menuContent {
+    height: 100%;
+    width: 100%;
+}
+
+div.menuContent>div.chatColumn {
+    height: 100%;
+    width: 45%;
+    display: inline-block;
 }
 
 /* ^ MENU PAGE ^ */
