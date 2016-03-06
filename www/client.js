@@ -53,10 +53,9 @@ $(function() {
   });
 
   socket.on('login', function (data) {
-    console.log('data username: ' + data.username);
-    console.log('data email: ' + data.email);
     username = data.username;
     email = data.email;
+    $('div.logoTopBar').append('<span class="usernameGreeting">Afternoon ' + data.username + '!');
     $('div#sidebar>div.profilePicture').append(getGravatarImage(email));
     loginSuccess();
 
