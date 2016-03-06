@@ -281,15 +281,54 @@ div#sidebar {
 div#sidebar>div.profilePicture {
     height: 160px;
     width: 160px;
+    margin-top: 10px;
     display: inline-block;
     background: purple;
     border-radius: 100px;
+
 }
 
 div.profilePicture>img.displayPicture.hoverZoomLink {
     height: 100%;
     width: 100%;
     display: inline-block;
+}
+
+div.friendsListContainer {
+    height: 100%;
+    width: 100%;
+    margin-top: 15px;
+    background: pink;
+    overflow-y: scroll;
+}
+
+div.friendsListContainer>ul.friendsList {
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+ul.friendsList>li.friend {
+    height: 40px;
+    line-height: 40px;
+    width: 100%;
+    text-align: left;
+}
+
+li.friend>img.friendImage {
+    height: 30px;
+    margin-top: 5px;
+    margin-left: 5px;
+}
+
+ul.friendsList>li.friend>span {
+    height: 40px;
+    line-height: 40px;
+    display: inline-block;
+    vertical-align: top;
+    margin-left: 12px;
 }
 
 /* ^ MENU PAGE ^ */
@@ -427,12 +466,6 @@ div.messageInputDiv>input.messageInput.send {
 }
 
 /* ^ CHAT PAGE ^ */
-
-
-
-
-
-
 
 /* Spin Kit CSS @tobiasahlin */
 
