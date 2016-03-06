@@ -3,6 +3,15 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var port = process.env.PORT || 5000;
+var Firebase = require('firebase');
+var firebaseRef = new Firebase("https://messagingserver.firebaseio.com/");
+var authData = firebaseRef.getAuth();
+
+if (authData) {
+  console.log("User " + authData.uid + " is logged in with " + authData.provider);
+} else {
+  console.log("User is logged out");
+}
 
 // listen at the port specified
 server.listen(port, function() {
@@ -39,8 +48,8 @@ io.on('connection', function(socket) {
 			numUsers++;
 			addedUser = true; // user is added
 
-			// emit login
-			socket.emit('login', {
+			// emit joinChat
+			socket.emit('join chat', {
 				numUsers: numUsers
 			});
 
@@ -77,4 +86,90 @@ io.on('connection', function(socket) {
 			});
 		}
 	});
-});
+
+	socket.on('create user', function(obj) {
+		firebaseRef.createUser({
+		  email    : obj.email,
+		  password : obj.password
+		}, function(error, userData) {
+		  if (error) {
+		    switch (error.code) {
+		      case "EMAIL_TAKEN":
+		      	socket.broadcast.emit('email taken');
+		      	console.log('email taken');
+		        break;
+		      case "INVALID_EMAIL":
+		      	socket.broadcast.emit('email invalid');
+		        break;
+		      default:
+		      	socket.broadcast.emit('create/login error');
+		    }
+		  } 
+		  else {
+		    console.log("Successfully created user account with uid:", userData.uid);
+		    socket.emit('login', obj);
+		  }
+		});
+	});
+
+	socket.on('login', function(obj) {
+		firebaseRef.authWithPassword({
+		  email    : obj.email,
+		  password : obj.password
+		}, function(error, authData) {
+		  if (error) {
+		    switch (error.code) {
+		      case "INVALID_EMAIL":
+		      	socket.broadcast.emit('email invalid');
+		        break;
+		      case "INVALID_PASSWORD":
+		      	socket.broadcast.emit('password wrong');
+		        break;
+		      case "INVALID_USER":
+		      	socket.broadcast.emit('email not recognised');
+		        break;
+		      default:
+		        socket.broadcast.emit('create/login error');
+		    }
+		  } 
+		  else {
+		  	socket.emit('login', obj);
+		    console.log("Authenticated successfully with payload:", authData);
+		  }
+		});
+	});
+
+	socket.on('password reset', function(email) {
+		  firebaseRef.resetPassword({
+		  email: email
+		}, function(error) {
+		  if (error) {
+		    switch (error.code) {
+		      case "INVALID_USER":
+		      	socket.broadcast.emit('email not recognised');
+		        break;
+		      default:
+		        socket.broadcast.emit('reset error');
+		    }
+		  } 
+		  else {
+		    socket.broadcast.emit('reset sent');
+		  }
+		});
+	});
+
+	// find a suitable name based on the meta info given by each provider
+	function getName(authData) {
+	  switch(authData.provider) {
+	     case 'password':
+	       return authData.password.email.replace(/@.*/, '');
+	     case 'twitter':
+	       return authData.twitter.displayName;
+	     case 'facebook':
+	       return authData.facebook.displayName;
+	  }
+	}
+
+
+
+  });

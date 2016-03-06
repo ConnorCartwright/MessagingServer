@@ -4,18 +4,75 @@
 <meta charset="UTF-8">
 <title>Messaging Server</title>
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontawesome/4.5.0/css/font-awesome.min.css">
+
+<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+
 </head>
 <body>
 <div class="contentContainer">
   <div class="content">
     <div class="page login">
+      <div class="logoTopBar">
+        <img class="companyLogo" src="Tangl.png" alt="Logo">
+      </div>
+      <div class="loginBox">
+        <div class="loginBoxContainer">
+          <img class="companyLogo" src="Tangl.png" alt="Logo">
+          <div class="loginForm">
+            <div class="formContainer login">
+              <input class="loginInput textInput emailInput" type="email" placeholder="Email address" maxlength="100" autofocus required />
+              <input class="loginInput textInput passwordInput" type="password" placeholder="Password" maxlength="100" required />
+              <input class="loginInput loginButton signIn" type="button" value="Sign In" maxlength="16" />
+              <div class="forgotPassword">
+                <span>Forgot your password?</span>
+              </div>
+              <input class="loginInput loginButton create" type="button" value="Create Account" maxlength="16" />
+            </div>
+
+            <div class="formContainer createAccount">
+              <input class="loginInput textInput emailInput" type="email" placeholder="Email address" maxlength="100" autofocus required />
+              <input class="loginInput textInput passwordInput" type="password" placeholder="Password" maxlength="100" />
+              <input class="loginInput loginButton create" type="button" value="Create Account" maxlength="16" />
+              <div class="backButton">
+                <span>
+                  <span>Back To Login</span>
+                </span>
+              </div>
+            </div>
+
+            <div class="formContainer resetPassword">
+              <input class="loginInput textInput emailInput" type="email" placeholder="Email address" maxlength="100" autofocus required />
+              <input class="loginInput loginButton reset" type="button" value="Reset" />
+              <div class="backButton">
+                <span>
+                  <span>Back To Login</span>
+                </span>
+              </div>
+            </div>
+            <div class="spinner">
+              <div class="rect1"></div>
+              <div class="rect2"></div>
+              <div class="rect3"></div>
+              <div class="rect4"></div>
+              <div class="rect5"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+    <div class="page menu">
       <div class="loginScreenLogo">
         <img src="https://whyevolutionistrue.files.wordpress.com/2015/02/cute-kitten-saying-hello.jpg" alt="kitten" />
       </div>
       <div class="loginScreenUserInput">
         <h1>Enter Username/Join room</h1>
-        <input class="userInput usernameInput" type="text" placeholder="Enter username" maxlength="16" autofocus />
-        <input class="userInput roomInput" type="text" placeholder="Create/Join room" maxlength="16" />
+        <input class="userInput usernameInput" type="text" placeholder="Enter username" maxlength="100" autofocus />
+        <input class="userInput roomInput" type="text" placeholder="Create/Join room" maxlength="100" />
         <input class="userInput go" type="button" value="Enter"/>
       </div>
     </div>

@@ -2,10 +2,11 @@ html, body {
     height: 100%;
     width: 100%;
     background: #EEE;
-    font-family: Arial;
+    font-family: 'Open Sans', Arial;
     font-size: 14px;
     color: #333;
     overflow: hidden;
+    margin: 0;
 }
 
 h1 {
@@ -26,7 +27,193 @@ div.content {
     width: 100%;
 }
 
+/* v PAGES v */
+
+div.page {
+    height: 100%;
+    width: 100%;
+    background-image: url('http://data.hdwallpapers.im/lines_abstract_background_point_scheme_background_free.jpg');
+    background-size: cover;
+    background-position: center center;
+}
+
+div.page.menu {
+    display: none;
+}
+
+
+div.page.chat {
+    display: none;
+}
+
+/* ^ PAGES ^ */
+
 /* v LOGIN PAGE v */
+
+div.logoTopBar {
+    height: 50px;
+    width: 100%;
+    background: rgba(255,255,255,0.9);
+}
+
+div.logoTopBar>img.companyLogo {
+    height: 40px;
+    margin-top: 6px;
+    margin-left: 5px;
+}
+
+div.loginBox {
+    height: 90%;
+    max-height: 500px;
+    width: 90%;
+    max-width: 400px;
+    display: inline-block;
+    position: absolute;
+    top: 70px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    box-shadow: 0 0 5px rgba(33,33,33,0.4);
+    background: rgba(250,250,250,0.96);
+    border-radius: 5px;
+}
+
+div.loginBoxContainer {
+    height: 96%;
+    width: 96%;
+    margin: 2%;
+    text-align: center;
+}
+
+div.loginBoxContainer>img.companyLogo {
+    height: 70px;
+    margin: 5px auto;
+    margin-bottom: 15px;
+}
+
+div.loginForm {
+    height: 75%;
+    width: 100%;
+}
+
+div.loginForm>div.formContainer {
+    height: 100%;
+    width: 80%;
+    margin: 0 10%;
+}
+
+div.loginForm input {
+    height: 52px;
+    line-height: 52px;
+    width: 100%;
+    display: inline-block;
+}
+
+div.loginForm input.loginInput.textInput {
+    display: block;
+    margin: 10px 0px;
+    font-size: 16px;
+    border: none;
+    background: none;
+    border-bottom: 2px solid #AAA;
+}
+
+div.loginForm input.loginInput.textInput:hover {
+    border-color: #7AADCC;
+}
+
+div.loginForm input.loginInput.textInput:active, div.loginForm input.loginInput.textInput:focus  {
+    border-color: #4CB5F5;
+    outline: none;
+}
+
+div.loginForm input.loginInput.loginButton {
+    display: inline-block;
+    background: #0C75C5;
+    color: #FFF;
+    font-size: 20px;
+    opacity: 0.8;
+    border: none;
+    border-radius: 5px;
+    margin: 4px 0;
+    cursor: pointer;
+    transition: 0.4s;
+}
+
+div.loginForm input.loginInput.loginButton:hover {
+    opacity: 1;
+}
+
+div.loginForm input.loginInput.loginButton.signIn {
+    margin-top: 16px;
+}
+
+div.formContainer.login input.loginInput.loginButton.create {
+    width: 76%;
+    position: absolute;
+    left: 12%;
+    bottom: 10px;
+    background: #BBB;
+    color: #555;
+    transition: 0.4s;
+}
+
+div.forgotPassword {
+    margin-top: 12px;
+    text-align: left;
+}
+
+div.forgotPassword>span {
+    color: #4CB5F5;   
+    cursor: pointer;
+    transition: 0.4s;
+}
+
+div.forgotPassword>span:hover {
+    color: #0C75C5;
+}
+
+div.loginForm div.backButton {
+    height: 44px;
+    line-height: 44px;
+    width: 60%;
+    position: absolute;
+    border-radius: 5px;
+    background: #0C75C5;
+    color: #FFF;
+    margin-left: 20%;
+    font-size: 18px;
+    opacity: 0.8;
+    bottom: 8px;
+    left: 0;
+    cursor: pointer;
+    text-align: center;
+    transition: 0.4s;
+}
+
+div.loginForm div.backButton:hover {
+    opacity: 1;
+}
+
+div.formContainer.createAccount {
+    display: none;
+}
+
+div.formContainer.resetPassword {
+    display: none;
+}
+
+div.loginForm div.spinner {
+    display: none;
+}
+
+
+
+/* ^ LOGIN PAGE ^ */
+
+
+/* v MENU PAGE v */
 
 div.loginScreenLogo {
     height: 200px;
@@ -77,13 +264,9 @@ input.userInput.go {
     cursor: pointer;
 }
 
-/* ^ LOGIN PAGE ^ */
+/* ^ MENU PAGE ^ */
 
 /* v CHAT PAGE v */
-
-div.page.chat {
-  display: none;
-}
 
 div.chatContainer {
     height: 100%;
@@ -118,7 +301,7 @@ div.chat>ul.chatLog {
 ul.chatLog>li>span {
 	margin-left: 30px;
 	font-weight: bold;
-	color: #444;
+	color: #222;
 }
 
 li.message {
@@ -128,8 +311,13 @@ li.message {
 
 li.message.chatMessage {
 	font-size: 20px;
-	font-family: Calibri;
+    box-shadow: 0 0 2px rgba(0,0,0,0.2);
 }
+
+li.message.chatMessage.typing {
+    opacity: 0.6;
+}
+
 
 li.message.chatMessage.even {
     background-color: rgba(102,165,173,0.6);
@@ -140,12 +328,18 @@ li.message.chatMessage.odd {
 }
 
 li.message.consoleMessage {
-	background-color: rgba(177,177,177,0.6);
-	text-align: center;	
+    background-color: rgba(88,88,88,0.6);
+    text-align: center;
 }
 
 li.message.consoleMessage>span {
 	font-weight: normal;
+}
+
+li.message.consoleMessage>span.username {
+    font-weight: bold;
+    margin-left: 0;
+    text-shadow: 0px 0px 5px #444;
 }
 
 li.message.consoleMessage.numUsers {
@@ -205,3 +399,73 @@ div.messageInputDiv>input.messageInput.send {
 }
 
 /* ^ CHAT PAGE ^ */
+
+
+
+
+
+
+
+/* Spin Kit CSS @tobiasahlin */
+
+.spinner {
+    width: 50px;
+    height: 40px;
+    text-align: center;
+    font-size: 10px;
+    position: absolute;
+    top: 280px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+
+.spinner > div {
+    background-color: #4CB5F5;
+    background-position: center center;
+    background-size: cover;
+    height: 100%;
+    width: 6px;
+    display: inline-block;
+    -webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;
+    animation: sk-stretchdelay 1.2s infinite ease-in-out;
+}
+
+.spinner .rect2 {
+  -webkit-animation-delay: -1.1s;
+  animation-delay: -1.1s;
+}
+
+.spinner .rect3 {
+  -webkit-animation-delay: -1.0s;
+  animation-delay: -1.0s;
+}
+
+.spinner .rect4 {
+  -webkit-animation-delay: -0.9s;
+  animation-delay: -0.9s;
+}
+
+.spinner .rect5 {
+  -webkit-animation-delay: -0.8s;
+  animation-delay: -0.8s;
+}
+
+@-webkit-keyframes sk-stretchdelay {
+  0%, 40%, 100% { -webkit-transform: scaleY(0.4) }  
+  20% { -webkit-transform: scaleY(1.0) }
+}
+
+@keyframes sk-stretchdelay {
+  0%, 40%, 100% { 
+    transform: scaleY(0.4);
+    -webkit-transform: scaleY(0.4);
+  }  20% { 
+    transform: scaleY(1.0);
+    -webkit-transform: scaleY(1.0);
+  }
+}
+
+
+/* Spin Kit CSS @tobiasahlin */

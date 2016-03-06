@@ -4,6 +4,7 @@ $(function() {
   var $usernameInput = $('input.usernameInput');   // username input
   var $messages = $('ul.chatLog');              // get whole chat log element
   var $inputMessage = $('input.messageInput.message');  // get new message input area
+
   var socket = io();
 
   var username;
@@ -14,22 +15,21 @@ $(function() {
   var typing_timeout = 1200;
   var $currentInput = $usernameInput.focus();
 
-  var evenRow = true;
-
   var $loginPage = $('.page.login'); // The login page
+  var $menuPage = $('.menu.chat'); // The chatroom page
   var $chatPage = $('.page.chat'); // The chatroom page
 
   socket.on('user joined', function (data) {
-    printConsoleMessage(data.username + ' joined the room.');
+    printConsoleMessage('<span class="username" style="color: ' + color(data.username) + '">' + data.username + '</span>' + ' joined the room.');
     printNumUsers(data);
   });
 
-  socket.on('login', function (data) {
+  socket.on('join chat', function (data) {
     connected = true;
     // display welcome message
     var $header = $('div.chatHeader>span');
     $header.html('Hey <i>' + username + '</i>, welcome to the chat!');
-    printConsoleMessage(username + ' joined the room.');
+    printConsoleMessage('<span class="username" style="color: ' + color(username) + '">' + username + '</span>' + ' joined the room.');
     printNumUsers(data);
   });
 
@@ -49,6 +49,10 @@ $(function() {
 
   socket.on('new message', function (data) {
     printMessage(data);
+  });
+
+  socket.on('login', function (data) {
+    loginSuccess();
   });
 
   // Removes the visual chat typing message
@@ -77,14 +81,12 @@ $(function() {
 
   // helper function to print a chat message to chat 
   function printMessage(data) {
-    var $message = $('<li class="message chatMessage ' + (evenRow ? 'even' : 'odd') + '" style="background-color: ' + color(data.username) + '"><span>' + data.username + ': ' + data.message + '</span></li>');
-    evenRow = !evenRow;
+    var $message = $('<li class="message chatMessage" style="background-color: ' + color(data.username) + '"><span>' + data.username + ':</span> ' + data.message + '</li>');
     $messages.append($message);
   }
 
   function printTypingMessage(data) {
-    var $message = $('<li class="message typing message chatMessage ' + (evenRow ? 'even' : 'odd') + '" data-username="' + data.username + '" style="background-color: ' + color(data.username) + '"><span>' + data.username + data.message + '</span></li>');
-    evenRow = !evenRow;
+    var $message = $('<li class="message typing message chatMessage" data-username="' + data.username + '" style="background-color: ' + color(data.username) + '"><span>' + data.username + data.message + '</span></li>');
     $messages.append($message);
   }
 
@@ -151,16 +153,6 @@ $(function() {
     }
   });
 
-  $('input.userInput.go').on('click', function() {
-      setUsername(); // log the user in
-  });
-
-  $('input.messageInput.send').on('click', function() {
-      sendMessage();
-      socket.emit('stop typing');
-      typing = false;
-  });
-
   function updateTyping () {
     if (connected) {
       if (!typing) {
@@ -182,7 +174,7 @@ $(function() {
 
   // color and increase brightness functions taken from stack overflow
   function color(string) {
-      return increase_brightness('#' + md5(string).slice(0, 6), 50);
+      return increase_brightness('#' + md5(string).slice(0, 6), 60);
   }
 
 
@@ -203,7 +195,66 @@ $(function() {
        ((0|(1<<8) + r + (256 - r) * percent / 100).toString(16)).substr(1) +
        ((0|(1<<8) + g + (256 - g) * percent / 100).toString(16)).substr(1) +
        ((0|(1<<8) + b + (256 - b) * percent / 100).toString(16)).substr(1);
-}
+  }
+
+  function loginSuccess() {
+    $loginPage.fadeOut(600, function() {
+      $menuPage.fadeIn(600);
+    });
+  }
+
+
+  // html element bindings
+
+  $('input.userInput.go').on('click', function() {
+      setUsername(); // log the user in
+  });
+
+  $('input.messageInput.send').on('click', function() {
+      sendMessage();
+      socket.emit('stop typing');
+      typing = false;
+  });
+
+  $('div.formContainer.login input.create').on('click', function() {
+    $('div.formContainer.login').fadeOut(400, function() {
+      $('div.formContainer.createAccount').fadeIn(400);
+    });
+  });
+
+  $('div.formContainer.createAccount div.backButton').on('click', function() {
+    $('div.formContainer.createAccount').fadeOut(400, function() {
+      $('div.formContainer.login').fadeIn(400);
+    });
+  });
+
+  $('div.formContainer.login div.forgotPassword').on('click', function() {
+    console.log('iiiiii');
+    $('div.formContainer.login').fadeOut(400, function() {
+      $('div.formContainer.resetPassword').fadeIn(400);
+    });
+  });
+
+  $('div.formContainer.resetPassword div.backButton').on('click', function() {
+    $('div.formContainer.resetPassword').fadeOut(400, function() {
+      $('div.formContainer.login').fadeIn(400);
+    });
+  });
+
+  $('div.formContainer.login input.loginInput.signIn').on('click', function() {
+    var email = $('div.formContainer.login input.loginInput.emailInput').val();
+    var password = $('div.formContainer.login input.loginInput.passwordInput').val();
+    var obj = {email: email, password: password};
+    socket.emit('login', obj);
+  });
+
+  $('div.formContainer.createAccount input.loginInput.create').on('click', function() {
+    var email = $('div.formContainer.createAccount input.loginInput.emailInput').val();
+    var password = $('div.formContainer.createAccount input.loginInput.passwordInput').val();
+    var obj = {email: email, password: password};
+    socket.emit('create user', obj);
+  });
+
 
 
 });
