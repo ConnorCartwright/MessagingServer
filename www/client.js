@@ -387,7 +387,7 @@ $(function() {
   });
 
   function getGravatarImage() {
-    return ('<img class="displayPicture" src="https://www.secure.gravatar.com/avatar/' + md5(email.toLowerCase()) + '?r=g&s=200" alt="Avatar">');
+    return ('<img class="displayPicture" src="http://wwww.gravatar.com/avatar/' + md5(email.toLowerCase()) + '?r=g&s=200" alt="Avatar">');
   }
 
 
