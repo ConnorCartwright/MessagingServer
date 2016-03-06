@@ -16,7 +16,7 @@ $(function() {
   var $currentInput = $usernameInput.focus();
 
   var $loginPage = $('.page.login'); // The login page
-  var $menuPage = $('.menu.chat'); // The chatroom page
+  var $menuPage = $('.page.menu'); // The chatroom page
   var $chatPage = $('.page.chat'); // The chatroom page
 
   socket.on('user joined', function (data) {
@@ -53,6 +53,7 @@ $(function() {
 
   socket.on('login', function (data) {
     loginSuccess();
+
   });
 
   socket.on('email invalid', function (data) {
@@ -249,8 +250,10 @@ $(function() {
   }
 
   function loginSuccess() {
+    console.log('login success!');
     $loginPage.fadeOut(600, function() {
       $menuPage.fadeIn(600);
+      $('div.logoTopBar>img.menuBars').fadeIn(400);
     });
   }
 

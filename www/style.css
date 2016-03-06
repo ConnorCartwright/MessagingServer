@@ -25,6 +25,9 @@ div.contentContainer {
 div.content {
     height: 100%;
     width: 100%;
+    background-image: url('http://data.hdwallpapers.im/lines_abstract_background_point_scheme_background_free.jpg');
+    background-size: cover;
+    background-position: center center;
 }
 
 /* v PAGES v */
@@ -32,9 +35,6 @@ div.content {
 div.page {
     height: 100%;
     width: 100%;
-    background-image: url('http://data.hdwallpapers.im/lines_abstract_background_point_scheme_background_free.jpg');
-    background-size: cover;
-    background-position: center center;
 }
 
 div.page.menu {
@@ -253,6 +253,21 @@ div.formContainer.resetPassword>div.passwordReset>span {
 }
 
 /* ^ LOGIN PAGE ^ */
+
+/* ^ MENU PAGE ^ */
+
+div.logoTopBar>img.menuBars {
+    height: 30px;
+    position: absolute;
+    margin-top: 10px;
+    vertical-align: top;
+    right: 8px;
+    opacity: 0.9;
+    display: none;
+    cursor: pointer;
+}
+
+/* ^ MENU PAGE ^ */
 
 /* v CHAT PAGE v */
 
