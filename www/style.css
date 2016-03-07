@@ -456,6 +456,7 @@ ul.chatLog>li.message.consoleMessage {
 }
 
 ul.chatLog>li.message.consoleMessage.numUsers {
+    background: rgba(33,33,33,0.8);
     width: 500px;
     position: absolute;
 }
@@ -495,6 +496,7 @@ div.messageInputDiv>input.messageInput.send {
     height: 44px;
     margin-left: 4px;
     font-size: 22px;
+    cursor: pointer;
 }
 
 /* ^ CHAT WINDOWS ^ */
