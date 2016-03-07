@@ -57,6 +57,7 @@ io.sockets.on('connection', function(socket) {
 		  password : obj.password
 		}, function(error, userData) {
 		  if (error) {
+		  	socket.emit('rebind create user');
 		    switch (error.code) {
 		      case "EMAIL_TAKEN":
 		      	socket.emit('email taken');
@@ -80,6 +81,7 @@ io.sockets.on('connection', function(socket) {
 		  password : obj.password
 		}, function(error, authData) {
 		  if (error) {
+		  	socket.emit('rebind login');
 		    switch (error.code) {
 		      case "INVALID_EMAIL":
 		      	socket.emit('email invalid');
@@ -107,6 +109,7 @@ io.sockets.on('connection', function(socket) {
 		  email: email
 		}, function(error) {
 		  if (error) {
+		  	socket.emit('rebind reset password');
 		    switch (error.code) {
 		      case "INVALID_USER":
 		      	socket.emit('email not recognised');
@@ -122,11 +125,16 @@ io.sockets.on('connection', function(socket) {
 	});
 
 	socket.on('join room', function(data) {
-		socket.join(data.room);
-		var room = io.sockets.adapter.rooms[data.room];
-		data.numUsers = room.length;
-		socket.emit('room joined', data);
-		socket.broadcast.emit('user joined room', data);
+		if (io.sockets.adapter.sids[socket.id][data.room]) {
+			// do nothing is user is already in room
+		}
+		else {
+			socket.join(data.room);
+			var room = io.sockets.adapter.rooms[data.room];
+			data.numUsers = room.length;
+			socket.emit('room joined', data);
+			socket.broadcast.emit('user joined room', data);
+		}
 	});
 
 	socket.on('left room', function(room) {

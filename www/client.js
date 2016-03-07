@@ -63,6 +63,18 @@ $(function() {
     loginSuccess();
   });
 
+  socket.on('rebind login', function() {
+    rebindLoginClick();  
+  });
+
+  socket.on('rebind create user', function() {
+    rebindCreateAccountClick();  
+  });
+
+  socket.on('rebind reset password', function() {
+    rebindResetPasswordClick();  
+  });
+
   socket.on('email invalid', function (data) {
     $('div.formContainer.posting input.emailInput').addClass('error');
   });
@@ -235,7 +247,7 @@ $(function() {
 
   // check password >= 8 characters, at least 1 number, 1 lower/upper case
   function validatePassword(password) {
-    return true; /// TO DO REMOVE
+    return true; /// TO DO REMOVE, enabled for ease of use
     var patt = new RegExp("(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/)");
     return patt.test(password);
   }
@@ -252,6 +264,7 @@ $(function() {
 
   $('div.formContainer.login input.create').on('click', function() {
     $('div.errorText').remove();
+    $('div.formContainer .error').removeClass('error'); 
     $('div.formContainer input.textInput').val("");
     $('div.formContainer.login').fadeOut(400, function() {
       $('div.formContainer.createAccount').fadeIn(400);
@@ -260,6 +273,7 @@ $(function() {
 
   $('div.formContainer.createAccount div.backButton').on('click', function() {
     $('div.errorText').remove();
+    $('div.formContainer .error').removeClass('error'); 
     $('div.formContainer input.textInput').val("");
     $('div.formContainer.createAccount').fadeOut(400, function() {
       $('div.formContainer.login').fadeIn(400);
@@ -268,6 +282,7 @@ $(function() {
 
   $('div.formContainer.login div.forgotPassword').on('click', function() {
     $('div.errorText').remove();
+    $('div.formContainer .error').removeClass('error');
     $('div.formContainer input.textInput').val("");
     $('div.formContainer.login').fadeOut(400, function() {
       $('div.formContainer.resetPassword').fadeIn(400);
@@ -282,20 +297,28 @@ $(function() {
     });
   });
 
-  $('div.formContainer.login input.loginInput.signIn').on('click', function() {
-    var email = $('div.formContainer.login input.loginInput.emailInput');
-    var password = $('div.formContainer.login input.loginInput.passwordInput');
+  // bind click handlers
+  rebindLoginClick();
+  rebindCreateAccountClick();
+  rebindResetPasswordClick();
+  rebindJoinRoomClick();
 
+  // function to handle login
+  function handleLogin(email, password) {
     $('div.formContainer.login input.error').removeClass('error');
     $('div.errorText').remove();
 
     if (!validateEmail(email.val())) {
       email.addClass('error');
+      // rebind the click event 
+      rebindLoginClick();
       return;
     }
 
     if (!validatePassword(password.val())) {
       password.addClass('error');
+      // rebind the click event 
+      rebindLoginClick();
       return;
     }
 
@@ -303,51 +326,54 @@ $(function() {
 
     var obj = {email: email.val(), password: password.val()};
     socket.emit('login', obj);
-  });
+  }
 
-  $('div.formContainer.createAccount input.loginInput.create').on('click', function() {
-    var email = $('div.formContainer.createAccount input.loginInput.emailInput');
-    var password = $('div.formContainer.createAccount input.loginInput.passwordInput');
-
+  // function to handle creating an account
+  function handleCreateAccount(email, password) {
     $('div.formContainer.createAccount input.error').removeClass('error');
     $('div.errorText').remove();
 
     if (!validateEmail(email.val())) {
       email.addClass('error');
+      // rebind the click event
+      rebindCreateAccountClick();
       return;
     }
 
     if (!validatePassword(password.val())) {
       password.addClass('error');
+      // rebind the click event
+      rebindCreateAccountClick();
       return;
     }
 
     $('div.formContainer.createAccount').addClass('posting');
-
     var obj = {email: email.val(), password: password.val()};
     socket.emit('create user', obj);
-  });
+  }
 
-  $('div.formContainer.resetPassword input.loginInput.reset').on('click', function() {
-    var email = $('div.formContainer.resetPassword input.loginInput.emailInput');
-
-    $('div.formContainer.createAccount input.error').removeClass('error');
+  // function to handle password reset
+  function handlePasswordReset(email) {
+    email.removeClass('error');
     $('div.errorText').remove();
 
     if (!validateEmail(email.val())) {
       email.addClass('error');
+      // rebind the click event
+      rebindResetPasswordClick();
       return;
     }
+    else {
+      $('div.formContainer.resetPassword').addClass('posting');
+      socket.emit('password reset', email.val());  
+    }
+  }
 
-    $('div.formContainer.resetPassword').addClass('posting');
-
-    socket.emit('password reset', email.val());
-  });
-
-  $('div#sidebar>div.sidebarRooms input.createJoinButton').on('click', function() {
-    var roomInput = $('input.roomInput.createJoinText');
+  // function to handle joining rooms
+  function handleJoinRoom(roomInput) {
     roomInput.removeClass('error');
     if (roomInput.val().length > 0 && roomInput.val().length < 20) {
+      // if the room already exists
       if ($('div.chatWindow[data-roomname="' + roomInput.val() + '"').length > 0) {
         $('div.chatWindow[data-roomname="' + roomInput.val() + '"').focus();
       }
@@ -355,14 +381,41 @@ $(function() {
         var obj = {room: roomInput.val(), username: username};
         socket.emit('join room', obj);
       }
-      roomInput.val("");
+      eroomInput.val("");
     }
     else {
       roomInput.addClass('error');
     }
-  });
+    rebindJoinRoomClick();
+  }
 
-  // $('div.chatWindow').draggable({containment: "parent"});
+  function rebindLoginClick() {
+    $('div.formContainer.login input.loginInput.signIn').one('click', function() {
+      var email = $('div.formContainer.login input.loginInput.emailInput');
+      var password = $('div.formContainer.login input.loginInput.passwordInput');
+      handleLogin(email, password);
+    });
+  }
 
+  function rebindCreateAccountClick() {
+    $('div.formContainer.createAccount input.loginInput.create').one('click', function() {
+      var email = $('div.formContainer.createAccount input.loginInput.emailInput');
+      var password = $('div.formContainer.createAccount input.loginInput.passwordInput');
+      handleCreateAccount(email, password);
+    }); 
+  }
 
+  function rebindResetPasswordClick() {
+    $('div.formContainer.resetPassword input.loginInput.reset').one('click', function() {
+      var email = $('div.formContainer.resetPassword input.loginInput.emailInput');
+      handlePasswordReset(email);
+    });
+  }
+
+  function rebindJoinRoomClick() {
+    $('div#sidebar>div.sidebarRooms input.createJoinButton').one('click', function() {
+      var roomInput = $('input.roomInput.createJoinText');
+      handleJoinRoom(roomInput);
+    });
+  }
 });
