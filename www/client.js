@@ -112,8 +112,21 @@ $(function() {
     chatWindow.append(chatHeader);
     chatWindow.append(messageList);
     chatWindow.append(messageInput);
+    chatWindow.hide();
+
+    var chatWidth = 500;
+    var chatHeight = 600;
+
+    var posX = (Math.random() * ($('div.menuContent').width() - chatWidth));
+    var posY = (Math.random() * ($('div.menuContent').height() - chatHeight));
 
     $('div.menuContent').append(chatWindow);
+    chatWindow.offset({
+      'left' : posX,
+      'top' : posY
+    });
+
+    chatWindow.fadeIn(500);
     chatWindow.draggable({containment: "parent"});
   });
 
@@ -381,7 +394,7 @@ $(function() {
         var obj = {room: roomInput.val(), username: username};
         socket.emit('join room', obj);
       }
-      eroomInput.val("");
+      roomInput.val("");
     }
     else {
       roomInput.addClass('error');

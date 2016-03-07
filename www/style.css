@@ -379,7 +379,8 @@ div.logoTopBar>span.usernameGreeting {
 
 div.menuContent {
     height: 100%;
-    width: 100%;
+    width: auto;
+    margin-right: 210px;
 }
 
 div.menuContent>div.chatColumn {
@@ -396,12 +397,8 @@ div.chatWindow {
     height: 600px;
     width: 500px;
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: auto;
     opacity: 0.95;
+    cursor: move;
 }
 
 div.chatHeader {
