@@ -456,9 +456,11 @@ ul.chatLog>li.message.consoleMessage {
 }
 
 ul.chatLog>li.message.consoleMessage.numUsers {
-    background: rgba(33,33,33,0.8);
     width: 500px;
     position: absolute;
+    background: rgba(33,33,33,0.8);
+    color: #DDD;
+    font-weight: 600;
 }
 
 ul.chatLog>li.message.consoleMessage.numUsers+li {
