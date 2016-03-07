@@ -7,12 +7,6 @@ var Firebase = require('firebase');
 var firebaseRef = new Firebase("https://messagingserver.firebaseio.com/");
 var authData = firebaseRef.getAuth();
 
-if (authData) {
-  console.log("User " + authData.uid + " is logged in with " + authData.provider);
-} else {
-  console.log("User is logged out");
-}
-
 // listen at the port specified
 server.listen(port, function() {
 	console.log('Server listening at port: ', port);
@@ -21,45 +15,15 @@ server.listen(port, function() {
 // Route
 app.use(express.static('www'));
 
-
+var rooms = ['global'];
 // Chatroom
 var numUsers = 0;
 
 // on/during connection
-io.on('connection', function(socket) {
+io.sockets.on('connection', function(socket) {
+
 	var addedUser = false; // user not added yet
 
-	// listens for a new message
-	socket.on('new message', function (data) {
-		// send the message
-		socket.broadcast.emit('new message', {
-			username: socket.username,
-			message: data
-		});
-	});
-
-	socket.on('add user', function (username) {
-		if (addedUser) {
-			return;
-		}
-		else {
-			// storing the username in socket for now
-			socket.username = username;
-			numUsers++;
-			addedUser = true; // user is added
-
-			// emit joinChat
-			socket.emit('join chat', {
-				numUsers: numUsers
-			});
-
-			// broadcast that a user has joined
-			socket.broadcast.emit('user joined', {
-				username: socket.username,
-				numUsers: numUsers
-			});
-		}
-	});
 
 	// show user is typing
 	socket.on('typing', function() {
@@ -105,9 +69,7 @@ io.on('connection', function(socket) {
 		    }
 		  } 
 		  else {
-		    console.log("Successfully created user account with uid:", userData.uid);
-		    var obj2 = {username: getName(authData), email: obj.email};
-		    socket.emit('login', obj2);
+		    socket.emit('created user');
 		  }
 		});
 	});
@@ -133,7 +95,7 @@ io.on('connection', function(socket) {
 		    }
 		  } 
 		  else {
-		  	var obj2 = {username: getName(authData), email: obj.email};
+		  	var obj2 = {username: getName(authData), email: obj.email, url: authData.password.profileImageURL};
 		  	socket.emit('login', obj2);
 		    console.log("Authenticated successfully with payload:", authData);
 		  }
@@ -159,6 +121,56 @@ io.on('connection', function(socket) {
 		});
 	});
 
+	socket.on('join room', function(data) {
+		socket.join(data.room);
+		var room = io.sockets.adapter.rooms[data.room];
+		data.numUsers = room.length;
+		socket.emit('room joined', data);
+		socket.broadcast.emit('user joined room', data);
+	});
+
+	socket.on('left room', function(room) {
+		socket.leave(room);
+		socket.emit('room exited', room);
+	});
+
+	socket.on('message', function(data) {
+		console.log(data.room);
+		io.sockets.in(data.room).emit('chat message', data);
+	});
+
+	// listens for a new message
+	socket.on('new message', function (data) {
+		// send the message
+		socket.broadcast.emit('new message', {
+			username: socket.username,
+			message: data
+		});
+	});
+
+	socket.on('add user', function (username) {
+		if (addedUser) {
+			return;
+		}
+		else {
+			// storing the username in socket for now
+			socket.username = username;
+			numUsers++;
+			addedUser = true; // user is added
+
+			// emit joinChat
+			socket.emit('join chat', {
+				numUsers: numUsers
+			});
+
+			// broadcast that a user has joined
+			socket.broadcast.emit('user joined', {
+				username: socket.username,
+				numUsers: numUsers
+			});
+		}
+	});
+ 
 	// find a suitable name based on the meta info given by each provider
 	function getName(authData) {
 	  switch(authData.provider) {

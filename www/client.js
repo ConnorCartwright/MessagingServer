@@ -9,7 +9,6 @@ $(function() {
 
   var username;
   var email;
-  var colour;
   var connected = false;
   var typing = false;
   var lastTypingTime;
@@ -21,8 +20,7 @@ $(function() {
   var $chatPage = $('.page.chat'); // The chatroom page
 
   socket.on('user joined', function (data) {
-    printConsoleMessage('<span class="username" style="color: ' + color(data.username) + '">' + data.username + '</span>' + ' joined the room.');
-    printNumUsers(data);
+    printConsoleMessage('<span class="username">' + data.username + '</span>' + ' joined the room.');
   });
 
   socket.on('join chat', function (data) {
@@ -30,13 +28,11 @@ $(function() {
     // display welcome message
     var $header = $('div.chatHeader>span');
     $header.html('Hey <i>' + username + '</i>, welcome to the chat!');
-    printConsoleMessage('<span class="username" style="color: ' + color(username) + '">' + username + '</span>' + ' joined the room.');
-    printNumUsers(data);
+    printConsoleMessage('<span class="username">' + username + '</span>' + ' joined the room.');
   });
 
   socket.on('user left', function (data) {
     printConsoleMessage(data.username + ' left the room.');
-    printNumUsers(data);
   });
 
   socket.on('typing', function (data) {
@@ -52,13 +48,25 @@ $(function() {
     printMessage(data);
   });
 
+  socket.on('chat message', function (data) {
+    console.log('in client message');
+    var chatLog  = $('div.chatWindow[data-roomname="' + data.room + '"] ul.chatLog');
+    var message = $('<li class="message chatMessage"><span><span class="username">' + data.username + '</span>: ' + data.message + '</span></li>')
+    chatLog.append(message);
+  });
+
+  socket.on('created user', function (data) {
+    formContainerMessage('User Account created!');
+  });
+
   socket.on('login', function (data) {
+    console.log('socket login');
     username = data.username;
     email = data.email;
+    url = data.url;
     $('div.logoTopBar').append('<span class="usernameGreeting">Afternoon ' + data.username + '!');
-    $('div#sidebar>div.profilePicture').append(getGravatarImage(email));
+    $('div#sidebar').prepend('<div class="profilePicture"><img class="displayPicture" src="' + url + '" alt="Profile Picture"></div>');
     loginSuccess();
-
   });
 
   socket.on('email invalid', function (data) {
@@ -86,7 +94,37 @@ $(function() {
   });
 
   socket.on('reset sent', function() {
-    var $message = $('<div class="passwordReset"><span>Password reset request sent!</span></div>');
+    formContainerMessage('Password reset request sent!');
+  });
+
+  socket.on('room joined', function (data) {
+    var chatWindow = $('<div class="chatWindow" data-roomName="' + data.room + '"></div>');
+    var chatHeader = $('<div class="chatHeader"><span>Hey ' + username + ', welcome to: <em>' + data.room + '</em></span></div>');
+    var messageList = $('<ul class="chatLog"><li class="message consoleMessage numUsers"><span><span>' + data.numUsers + '</span> active user(s)</span></li></ul>');
+    var messageInput = $('<div class="messageInputDiv"><input class="messageInput message" type="text" placeholder="Type here" maxlength="300" autofocus /><input class="messageInput send" type="button" value=">" /></div>');
+
+    chatWindow.append(chatHeader);
+    chatWindow.append(messageList);
+    chatWindow.append(messageInput);
+
+    $('div.menuContent').append(chatWindow);
+    chatWindow.draggable({containment: "parent"});
+  });
+
+  socket.on('user joined room', function (data) {
+    console.log('in user joined room');
+    var room = $('div.chatWindow[data-roomname="' + data.room + '"]');
+    if (room) {
+          var chatLog  = $('div.chatWindow[data-roomname="' + data.room + '"] ul.chatLog');
+          var message = $('<li class="message consoleMessage"><span><span class="username">' + data.username + '</span> joined the room!</span></li>')
+          chatLog.append(message);
+
+          chatLog.find('li.numUsers>span>span').text(data.numUsers);
+    }
+  });
+
+  function formContainerMessage(message) {
+    var $message = $('<div class="formContainerMessage"><span>' + message + '</span></div>');
     $message.hide();
     $('div.formContainer.posting').append($message);
 
@@ -94,23 +132,11 @@ $(function() {
       setTimeout(function() {
         $message.fadeOut(800, function() {
           $('div.formContainer.login').fadeIn(400);
-          $('div.formContainer.resetPassword').fadeOut(400);
+          $('div.formContainer.posting').fadeOut(400);
         });
       }, 400);
-
     });
-
-  });
-
-  // emit reset sent
-
-
-
-
-
-
-
-
+  }
 
   // Removes the visual chat typing message
   function removeChatTyping (data) {
@@ -138,42 +164,13 @@ $(function() {
 
   // helper function to print a chat message to chat 
   function printMessage(data) {
-    var $message = $('<li class="message chatMessage" style="background-color: ' + color(data.username) + '"><span>' + data.username + ':</span> ' + data.message + '</li>');
+    var $message = $('<li class="message chatMessage""><span>' + data.username + ':</span> ' + data.message + '</li>');
     $messages.append($message);
   }
 
   function printTypingMessage(data) {
-    var $message = $('<li class="message typing message chatMessage" data-username="' + data.username + '" style="background-color: ' + color(data.username) + '"><span>' + data.username + data.message + '</span></li>');
+    var $message = $('<li class="message typing message chatMessage" data-username="' + data.username + '"><span>' + data.username + data.message + '</span></li>');
     $messages.append($message);
-  }
-
-  function sendMessage() {
-    var message = $inputMessage.val();
-    // if user is connected and has a message
-    if (connected && message) {
-        $inputMessage.val('');
-        printMessage({
-          username: username,
-          message: message
-        });
-        socket.emit('new message', message);
-    }
-  }
-
-  // helper function to print the number of users in the room
-  function printNumUsers(data) {
-    var $users = $('li.consoleMessage.numUsers>span');
-    var text = ""
-    if (data.numUsers > 1) {
-
-      text = 'There are ' + data.numUsers + ' active users.';
-    }
-    else if (data.numUsers == 1)  {
-      text = 'There is only 1 active user.';
-    }
-    $users.fadeOut(200, function() {
-      $(this).text(text).fadeIn(200);
-    });
   }
 
   // helper function to show a user is typing
@@ -183,31 +180,29 @@ $(function() {
     printTypingMessage(data);
   }
 
-    // Sets the client's username
-  function setUsername () {
-    username = $usernameInput.val();
-    // if the username is valid
-    if (username) {
-      colour = color(username);
-      $loginPage.fadeOut(600);
-      $chatPage.fadeIn(1200)
-      $currentInput = $inputMessage.focus();
-
-      // Tell the server the username
-      socket.emit('add user', username);
-    }
-  }
-
   $window.keydown(function(event) {
     if (event.which === 13) { // if the user pressed ENTER
-      if (username) { // if the user is loggedIn
-        sendMessage();
+      if ($('div.chatWindow input.messageInput.message').is(':focus')) {
+        console.log('in enter keydown');
+        var messageInput = $(document.activeElement);
+        var room = messageInput.closest('div.chatWindow').attr('data-roomname');
+        var a = messageInput.closest('div.chatWindow');
+        var obj = {message: messageInput.val(), room: room, username: username};
+        socket.emit('message', obj);
+        messageInput.val('')
         socket.emit('stop typing');
         typing = false;
-      } else { // else log them in
-          setUsername();
       }
     }
+  });
+
+  $('div.chatWindow input.messageInput.send').on('click', function() {
+      var room = $(this).closest('div.chatWindow').attr('data-roomname');
+      var messageInput = $(this).closest('input.messageInput.mesage');
+      var obj = {message: messageInput.val(), room: room.val()};
+      socket.emit('message', obj);
+      socket.emit('stop typing');
+      typing = false;
   });
 
   function updateTyping () {
@@ -229,36 +224,12 @@ $(function() {
     }
   }
 
-  // color and increase brightness functions taken from stack overflow
-  function color(string) {
-      return increase_brightness('#' + md5(string).slice(0, 6), 60);
-  }
-
-
-  function increase_brightness(hex, percent){
-    // strip the leading # if it's there
-    hex = hex.replace(/^\s*#|\s*$/g, '');
-
-    // convert 3 char codes --> 6, e.g. `E0F` --> `EE00FF`
-    if(hex.length == 3){
-        hex = hex.replace(/(.)/g, '$1$1');
-    }
-
-    var r = parseInt(hex.substr(0, 2), 16),
-        g = parseInt(hex.substr(2, 2), 16),
-        b = parseInt(hex.substr(4, 2), 16);
-
-    return '#' +
-       ((0|(1<<8) + r + (256 - r) * percent / 100).toString(16)).substr(1) +
-       ((0|(1<<8) + g + (256 - g) * percent / 100).toString(16)).substr(1) +
-       ((0|(1<<8) + b + (256 - b) * percent / 100).toString(16)).substr(1);
-  }
-
   function loginSuccess() {
     console.log('login success!');
     $loginPage.fadeOut(600, function() {
       $menuPage.fadeIn(600);
       $('div.logoTopBar>img.menuBars').fadeIn(400);
+      $("img.menuBars").trigger("click");
     });
   }
 
@@ -283,12 +254,6 @@ $(function() {
 
   $('input.userInput.go').on('click', function() {
       setUsername(); // log the user in
-  });
-
-  $('input.messageInput.send').on('click', function() {
-      sendMessage();
-      socket.emit('stop typing');
-      typing = false;
   });
 
   $('div.formContainer.login input.create').on('click', function() {
@@ -385,9 +350,25 @@ $(function() {
     socket.emit('password reset', email.val());
   });
 
-  function getGravatarImage() {
-    return ('<img class="displayPicture" src="http://wwww.gravatar.com/avatar/' + md5(email.toLowerCase()) + '?r=g&s=200" alt="Avatar">');
-  }
+  $('div#sidebar>div.sidebarRooms input.createJoinButton').on('click', function() {
+    var roomInput = $('input.roomInput.createJoinText');
+    roomInput.removeClass('error');
+    if (roomInput.val().length > 0 && roomInput.val().length < 20) {
+      if ($('div.chatWindow[data-roomname="' + roomInput.val() + '"').length > 0) {
+        $('div.chatWindow[data-roomname="' + roomInput.val() + '"').focus();
+      }
+      else {
+        var obj = {room: roomInput.val(), username: username};
+        socket.emit('join room', obj);
+      }
+      roomInput.val("");
+    }
+    else {
+      roomInput.addClass('error');
+    }
+  });
+
+  // $('div.chatWindow').draggable({containment: "parent"});
 
 
 });

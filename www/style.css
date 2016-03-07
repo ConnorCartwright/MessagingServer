@@ -390,139 +390,114 @@ div.menuContent>div.chatColumn {
 
 /* ^ MENU PAGE ^ */
 
-/* v CHAT PAGE v */
+/* v CHAT WINDOWS v */
 
-div.chatContainer {
-    height: 100%;
-    width: 90%;
-    max-width: 800px;
+div.chatWindow {
+    height: 600px;
+    width: 500px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     margin: auto;
-    background-image: url("http://www.pixeden.com/media/k2/galleries/165/001-subtle-light-pattern-background-texture-vol5.jpg");
+    opacity: 0.95;
 }
 
-div.chat {
-    height: 94%;
+div.chatHeader {
+    height: 36px;
+    line-height: 36px;
     width: 100%;
-    margin-top: 3%;
-}
-
-div.chat>h2 {
-    margin-top: 16px;
-    margin-left: 16px;
-    display: inline-block;
-}
-
-div.chat>ul.chatLog {
-    height: 100%;
-    width: 100%;
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    background: rgba(77,77,77,0.1);
-    overflow-y: scroll;
-}
-
-ul.chatLog>li>span {
-	margin-left: 30px;
-	font-weight: bold;
-	color: #222;
-}
-
-li.message {
-	height: 30px;
-	line-height: 30px;
-}
-
-li.message.chatMessage {
-	font-size: 20px;
-    box-shadow: 0 0 2px rgba(0,0,0,0.2);
-}
-
-li.message.chatMessage.typing {
-    opacity: 0.6;
-}
-
-
-li.message.chatMessage.even {
-    background-color: rgba(102,165,173,0.6);
-}
-
-li.message.chatMessage.odd {
-    background-color: rgba(89,130,52,0.6);
-}
-
-li.message.consoleMessage {
-    background-color: rgba(88,88,88,0.6);
-    text-align: center;
-}
-
-li.message.consoleMessage>span {
-	font-weight: normal;
-}
-
-li.message.consoleMessage>span.username {
+    font-size: 17.5px;
     font-weight: bold;
-    margin-left: 0;
-    text-shadow: 0px 0px 5px #444;
-}
-
-li.message.consoleMessage.numUsers {
-    background-color: rgba(60,60,60,0.4);
-    font-weight: bold;
-}
-
-li.message.consoleMessage.numUsers>span {
-    margin: 0;
-    color: #222;
-    font-weight: bold;
-}
-
-
-div.chat>div.chatHeader {
-    height: 45px;
-    line-height: 45px;
-    width: 100%;
-    background: #FFF;
+    color: #DDD;
+    border-radius: 5px;
+    background: rgba(22,22,22,1);
+    box-shadow: 0px 0px 1px 0px rgba(120,120,120,0.8);
 }
 
 div.chatHeader>span {
-    margin-left: 1.9%;
-    font-size: 20px;
+    margin-left: 16px;
+}
+
+ul.chatLog {
+    height: 516px;
+    width: 100%;
+    background: #eee;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    margin-bottom: 2px;
+    margin-top: 2px;
+    border-radius: 5px;
+    overflow-y: scroll;
+}
+
+ul.chatLog>li.message {
+    height: 34px;
+    line-height: 34px;
+    width: 100%;
+}
+
+ul.chatLog>li.message>span {
+    display: inline-block;
+    margin-left: 12px;
+    width: 488px;
+    white-space: nowrap;
+}
+
+ul.chatLog>li.message span.username {
     font-weight: bold;
 }
 
-div.chat>div.messageInputDiv {
-    height: 45px;
-    width: 100%;
-    bottom: 0;
-    margin: 0;
-    background: #FFF;
+ul.chatLog>li.message.consoleMessage {
+    background: rgba(99,99,99,0.4);
+    text-align: center;
 }
 
-div.messageInputDiv>input.messageInput {
-    height: 100%;
-    width: 90%;
-    margin-left: 2%;
-    font-size: 20px;
-    background: none;
+ul.chatLog>li.message.consoleMessage.numUsers {
+    width: 500px;
+    position: absolute;
+}
+
+ul.chatLog>li.message.consoleMessage.numUsers+li {
+    margin-top: 34px;
+}
+
+ul.chatLog>li.message.consoleMessage>span {
+    margin-left: 0;
+}
+
+div.messageInputDiv {
+    height: 44px;
+    width: 100%;
+}
+
+div.messageInputDiv>input {
+    height: 44px;
     border: none;
+    margin: 0;
+    padding: 0;
+    outline: none;
+    background: #EEE;
+    border-radius: 5px;
+    vertical-align: top;
+}
+
+div.messageInputDiv>input.messageInput.message {
+    width: 438px;
+    padding-left: 12px;
+    font-size: 14px;
 }
 
 div.messageInputDiv>input.messageInput.send {
-    height: 35px;
-    line-height: 26px;
-    width: 4%;
-    margin-top: 5px;
-    border: solid 2px #388E8E;
-    background: #388E8E;
-    color: #DDD;
+    width: 46px;
+    height: 44px;
+    margin-left: 4px;
     font-size: 22px;
-    right: 0;
-    border-radius: 4px;
-    cursor: pointer;
 }
 
-/* ^ CHAT PAGE ^ */
+/* ^ CHAT WINDOWS ^ */
 
 /* Spin Kit CSS @tobiasahlin */
 
