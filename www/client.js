@@ -3,8 +3,6 @@ $(function() {
   var $window = $(window);
   var $usernameInput = $('input.usernameInput');   // username input
   var $messages = $('ul.chatLog');              // get whole chat log element
-  var $inputMessage = $('input.messageInput.message');  // get new message input area
-
   var socket = io();
 
   var username;
@@ -42,10 +40,6 @@ $(function() {
   // kill the typing message on stop typing
   socket.on('stop typing', function (data) {
     removeChatTyping(data);
-  });
-
-  socket.on('new message', function (data) {
-    printMessage(data);
   });
 
   socket.on('chat message', function (data) {
@@ -152,10 +146,6 @@ $(function() {
     });
   }
 
-  $inputMessage.on('input', function() {
-    updateTyping();
-  });
-
   // helper function to print a console message to chat 
   function printConsoleMessage(message) {
     var $message = $('<li class="message consoleMessage">' + message + '</li>');
@@ -185,19 +175,23 @@ $(function() {
       if ($('div.chatWindow input.messageInput.message').is(':focus')) {
         console.log('in enter keydown');
         var messageInput = $(document.activeElement);
-        var room = messageInput.closest('div.chatWindow').attr('data-roomname');
-        var a = messageInput.closest('div.chatWindow');
-        var obj = {message: messageInput.val(), room: room, username: username};
-        socket.emit('message', obj);
-        messageInput.val('')
-        socket.emit('stop typing');
-        typing = false;
+        if (messageInput.val().length > 0) {
+          var room = messageInput.closest('div.chatWindow').attr('data-roomname');
+          var a = messageInput.closest('div.chatWindow');
+          var obj = {message: messageInput.val(), room: room, username: username};
+          socket.emit('message', obj);
+          messageInput.val('')
+          socket.emit('stop typing');
+          typing = false;
+        }
       }
     }
   });
 
   $('div.chatWindow input.messageInput.send').on('click', function() {
+      console.log('on enter button click');
       var room = $(this).closest('div.chatWindow').attr('data-roomname');
+      console.log(room);
       var messageInput = $(this).closest('input.messageInput.mesage');
       var obj = {message: messageInput.val(), room: room.val()};
       socket.emit('message', obj);

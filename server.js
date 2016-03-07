@@ -135,39 +135,8 @@ io.sockets.on('connection', function(socket) {
 	});
 
 	socket.on('message', function(data) {
-		console.log(data.room);
-		io.sockets.in(data.room).emit('chat message', data);
-	});
-
-	// listens for a new message
-	socket.on('new message', function (data) {
-		// send the message
-		socket.broadcast.emit('new message', {
-			username: socket.username,
-			message: data
-		});
-	});
-
-	socket.on('add user', function (username) {
-		if (addedUser) {
-			return;
-		}
-		else {
-			// storing the username in socket for now
-			socket.username = username;
-			numUsers++;
-			addedUser = true; // user is added
-
-			// emit joinChat
-			socket.emit('join chat', {
-				numUsers: numUsers
-			});
-
-			// broadcast that a user has joined
-			socket.broadcast.emit('user joined', {
-				username: socket.username,
-				numUsers: numUsers
-			});
+		if (data.message.length > 0 ) {
+			io.sockets.in(data.room).emit('chat message', data);
 		}
 	});
  
@@ -182,7 +151,4 @@ io.sockets.on('connection', function(socket) {
 	       return authData.facebook.displayName;
 	  }
 	}
-
-
-
   });
