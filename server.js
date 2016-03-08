@@ -137,9 +137,16 @@ io.sockets.on('connection', function(socket) {
 		}
 	});
 
-	socket.on('left room', function(room) {
-		socket.leave(room);
-		socket.emit('room exited', room);
+	socket.on('left room', function(data) {
+		if (io.sockets.adapter.sids[socket.id][data.room]) {
+			socket.leave(data.room);
+			var room = io.sockets.adapter.rooms[data.room];
+			data.numUsers = room.length;
+			socket.broadcast.emit('user left room', data);
+		}
+		else {
+			// do nothing if user isn't in room
+		}
 	});
 
 	socket.on('message', function(data) {

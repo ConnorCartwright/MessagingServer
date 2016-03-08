@@ -401,6 +401,10 @@ div.chatWindow {
     cursor: move;
 }
 
+div.chatWindow.active {
+    z-index: 5;
+}
+
 div.chatHeader {
     height: 36px;
     line-height: 36px;
@@ -415,6 +419,19 @@ div.chatHeader {
 
 div.chatHeader>span {
     margin-left: 16px;
+}
+
+div.chatHeader>div.closeChat {
+    height: 28px;
+    width: 28px;
+    position: absolute;
+    font-size: 30px;
+    right: 4px;
+    top: 4px;
+    background-image: url('http://urban-chalet.com/img/layout/thin-x.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    cursor: pointer;
 }
 
 ul.chatLog {

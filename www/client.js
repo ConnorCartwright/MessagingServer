@@ -105,7 +105,23 @@ $(function() {
 
   socket.on('room joined', function (data) {
     var chatWindow = $('<div class="chatWindow" data-roomName="' + data.room + '"></div>');
+
+
+    $(chatWindow).on('click', function() {
+      $('div.chatWindow').removeClass('active');
+      $(chatWindow).addClass('active');
+    });
+
     var chatHeader = $('<div class="chatHeader"><span>Hey ' + username + ', welcome to: <em>' + data.room + '</em></span></div>');
+    var leaveRoom = $('<div class="closeChat"></div>');
+
+    leaveRoom.one('click', function() {
+      var obj = {room: data.room, username: username};
+      socket.emit('left room', obj);
+      chatWindow.remove();
+    });
+
+    chatHeader.append(leaveRoom);
     var messageList = $('<ul class="chatLog"><li class="message consoleMessage numUsers"><span><span>' + data.numUsers + '</span> active user(s)</span></li></ul>');
     var messageInput = $('<div class="messageInputDiv"><input class="messageInput message" type="text" placeholder="Type here" maxlength="300" autofocus /><input class="messageInput send" type="button" value=">" /></div>');
 
@@ -118,7 +134,7 @@ $(function() {
     var chatHeight = 600;
 
     var posX = (Math.random() * ($('div.menuContent').width() - chatWidth));
-    var posY = (Math.random() * ($('div.menuContent').height() - chatHeight));
+    var posY = (Math.random() * ($('div.menuContent').height() - chatHeight - 50) + 50);
 
     $('div.menuContent').append(chatWindow);
     chatWindow.offset({
@@ -131,14 +147,22 @@ $(function() {
   });
 
   socket.on('user joined room', function (data) {
-    console.log('in user joined room');
     var room = $('div.chatWindow[data-roomname="' + data.room + '"]');
     if (room) {
-          var chatLog  = $('div.chatWindow[data-roomname="' + data.room + '"] ul.chatLog');
-          var message = $('<li class="message consoleMessage"><span><span class="username">' + data.username + '</span> joined the room!</span></li>')
-          chatLog.append(message);
+      var chatLog  = $('div.chatWindow[data-roomname="' + data.room + '"] ul.chatLog');
+      var message = $('<li class="message consoleMessage"><span><span class="username">' + data.username + '</span> joined the room!</span></li>')
+      chatLog.append(message);
+      chatLog.find('li.numUsers>span>span').text(data.numUsers);
+    }
+  });
 
-          chatLog.find('li.numUsers>span>span').text(data.numUsers);
+  socket.on('user left room', function (data) {
+    var room = $('div.chatWindow[data-roomname="' + data.room + '"]');
+    if (room) {
+      var chatLog  = $('div.chatWindow[data-roomname="' + data.room + '"] ul.chatLog');
+      var message = $('<li class="message consoleMessage"><span><span class="username">' + data.username + '</span> has left the room!</span></li>')
+      chatLog.append(message);
+      chatLog.find('li.numUsers>span>span').text(data.numUsers);
     }
   });
 
@@ -431,4 +455,12 @@ $(function() {
       handleJoinRoom(roomInput);
     });
   }
+
+  function rebindLeaveRoomClick() {
+    $('div#sidebar>div.sidebarRooms input.createJoinButton').one('click', function() {
+      var roomInput = $('input.roomInput.createJoinText');
+      handleJoinRoom(roomInput);
+    });
+  }
+
 });
