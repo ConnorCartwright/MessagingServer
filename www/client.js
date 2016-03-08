@@ -309,7 +309,11 @@ $(function() {
   // html element bindings
 
   $('img.menuBars').on('click', function() {
-    $('#sidebar').animate({width: $('#sidebar').width() === 0 ? 210 : 0 });
+    $('#sidebar').animate({
+      width: $('#sidebar').width() === 0 ? 210 : 0,
+    }, 600, function() {
+      $('div.menuContent').css('margin-right', $('#sidebar').width() === 210 ? 210 : 0);
+    });
   });
 
   $('input.userInput.go').on('click', function() {
