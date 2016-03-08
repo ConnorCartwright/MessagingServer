@@ -61,7 +61,7 @@ $(function() {
     username = data.username;
     email = data.email;
     url = data.url;
-    $('div.logoTopBar').append('<span class="usernameGreeting">Afternoon ' + data.username + '!');
+    $('div.logoTopBar').append('<span class="usernameGreeting">Welcome ' + data.username + '!');
     $('div#sidebar').prepend('<div class="profilePicture"><img class="displayPicture" src="' + url + '" alt="Profile Picture"></div>');
     loginSuccess();
   });
