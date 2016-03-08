@@ -43,7 +43,6 @@ $(function() {
   });
 
   socket.on('chat message', function (data) {
-    console.log('in client message');
     var chatLog  = $('div.chatWindow[data-roomname="' + data.room + '"] ul.chatLog');
     var message = $('<li class="message chatMessage"><span><span class="username">' + data.username + '</span>: ' + data.message + '</span></li>')
     chatLog.append(message);
@@ -54,7 +53,6 @@ $(function() {
   });
 
   socket.on('login', function (data) {
-    console.log('socket login');
     username = data.username;
     email = data.email;
     url = data.url;
@@ -123,7 +121,25 @@ $(function() {
 
     chatHeader.append(leaveRoom);
     var messageList = $('<ul class="chatLog"><li class="message consoleMessage numUsers"><span><span>' + data.numUsers + '</span> active user(s)</span></li></ul>');
-    var messageInput = $('<div class="messageInputDiv"><input class="messageInput message" type="text" placeholder="Type here" maxlength="300" autofocus /><input class="messageInput send" type="button" value=">" /></div>');
+    var messageInput = $('<div class="messageInputDiv"><input class="messageInput message" type="text" placeholder="Type here" maxlength="300" autofocus /></div>');
+    var sendButton = $('<input class="messageInput send" type="button" value=">" />');
+
+    sendButton.on('click', function() {
+      var textInput = messageInput.find('input.message');
+
+      if (textInput.val().length > 0) {
+        var room = data.room;
+
+        var obj = { message: textInput.val(), room: data.room, username: username };
+        socket.emit('message', obj);
+        messageInput.val('')
+        socket.emit('stop typing');
+        typing = false;
+      }
+
+    });
+
+    messageInput.append(sendButton);
 
     chatWindow.append(chatHeader);
     chatWindow.append(messageList);
@@ -222,7 +238,6 @@ $(function() {
   $window.keydown(function(event) {
     if (event.which === 13) { // if the user pressed ENTER
       if ($('div.chatWindow input.messageInput.message').is(':focus')) {
-        console.log('in enter keydown');
         var messageInput = $(document.activeElement);
         if (messageInput.val().length > 0) {
           var room = messageInput.closest('div.chatWindow').attr('data-roomname');
@@ -235,17 +250,6 @@ $(function() {
         }
       }
     }
-  });
-
-  $('div.chatWindow input.messageInput.send').on('click', function() {
-      console.log('on enter button click');
-      var room = $(this).closest('div.chatWindow').attr('data-roomname');
-      console.log(room);
-      var messageInput = $(this).closest('input.messageInput.mesage');
-      var obj = {message: messageInput.val(), room: room.val()};
-      socket.emit('message', obj);
-      socket.emit('stop typing');
-      typing = false;
   });
 
   function updateTyping () {
@@ -268,7 +272,6 @@ $(function() {
   }
 
   function loginSuccess() {
-    console.log('login success!');
     $loginPage.fadeOut(600, function() {
       $menuPage.fadeIn(600);
       $('div.logoTopBar>img.menuBars').fadeIn(400);
