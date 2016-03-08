@@ -132,7 +132,7 @@ $(function() {
 
         var obj = { message: textInput.val(), room: data.room, username: username };
         socket.emit('message', obj);
-        messageInput.val('')
+        textInput.val('');
         socket.emit('stop typing');
         typing = false;
       }
@@ -140,7 +140,6 @@ $(function() {
     });
 
     messageInput.append(sendButton);
-
     chatWindow.append(chatHeader);
     chatWindow.append(messageList);
     chatWindow.append(messageInput);
