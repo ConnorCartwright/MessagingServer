@@ -29,8 +29,10 @@ $(function() {
     printConsoleMessage('<span class="username">' + username + '</span>' + ' joined the room.');
   });
 
-  socket.on('user left', function (data) {
-    printConsoleMessage(data.username + ' left the room.');
+  socket.on('user disconnect', function (uid) {
+    $('li.friend[data-userid="' + uid + '"]').fadeOut(400, function() {
+      $(this).remove();
+    });
   });
 
   socket.on('typing', function (data) {
@@ -46,6 +48,9 @@ $(function() {
     var chatLog  = $('div.chatWindow[data-roomname="' + data.room + '"] ul.chatLog');
     var message = $('<li class="message chatMessage"><span><span class="username">' + data.username + '</span>: ' + data.message + '</span></li>')
     chatLog.append(message);
+
+    var height = chatLog[0].scrollHeight;
+    chatLog.scrollTop(height);
   });
 
   socket.on('created user', function (data) {
@@ -59,6 +64,16 @@ $(function() {
     $('div.logoTopBar').append('<span class="usernameGreeting">Afternoon ' + data.username + '!');
     $('div#sidebar').prepend('<div class="profilePicture"><img class="displayPicture" src="' + url + '" alt="Profile Picture"></div>');
     loginSuccess();
+  });
+
+  socket.on('user login', function (data) {
+    var friend = $('<li class="friend" data-userid="' + data.uid +'"></li>');
+    var image = ('<img class="friendImage" src="' + data.url + '" alt="O">');
+    var name = $('<span>' + data.username + '</span>');
+    friend.append(image);
+    friend.append(name);
+
+    $('ul.friendsList').append(friend);
   });
 
   socket.on('rebind login', function() {

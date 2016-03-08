@@ -15,7 +15,6 @@ server.listen(port, function() {
 // Route
 app.use(express.static('www'));
 
-var rooms = ['global'];
 // Chatroom
 var numUsers = 0;
 
@@ -40,15 +39,7 @@ io.sockets.on('connection', function(socket) {
 	});
 
 	socket.on('disconnect', function() {
-		if (addedUser) {
-			numUsers--;
-
-			// broadcast user has left
-			socket.broadcast.emit('user left', {
-				username: socket.username,
-				numUsers: numUsers
-			});
-		}
+		socket.broadcast.emit('user disconnect', socket.authData.uid);
 	});
 
 	socket.on('create user', function(obj) {
@@ -97,9 +88,11 @@ io.sockets.on('connection', function(socket) {
 		    }
 		  } 
 		  else {
-		  	var obj2 = {username: getName(authData), email: obj.email, url: authData.password.profileImageURL};
+		  	var otherUsers = Object.keys(io.engine.clients);
+		  	socket.authData = authData;
+		  	var obj2 = {username: getName(authData), email: obj.email, url: authData.password.profileImageURL, uid: authData.uid};
 		  	socket.emit('login', obj2);
-		    console.log("Authenticated successfully with payload:", authData);
+		  	socket.broadcast.emit('user login', obj2);
 		  }
 		});
 	});
@@ -166,4 +159,25 @@ io.sockets.on('connection', function(socket) {
 	       return authData.facebook.displayName;
 	  }
 	}
+
+	function findClientsSocket(roomId, namespace) {
+	    var res = []
+	    , ns = io.of(namespace ||"/");    // the default namespace is "/"
+
+	    if (ns) {
+	        for (var id in ns.connected) {
+	            if(roomId) {
+	                var index = ns.connected[id].rooms.indexOf(roomId) ;
+	                if(index !== -1) {
+	                    res.push(ns.connected[id]);
+	                }
+	            } else {
+	                res.push(ns.connected[id]);
+	            }
+	        }
+	    }
+	    return res;
+	}
+
+
   });
