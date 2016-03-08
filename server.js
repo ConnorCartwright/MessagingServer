@@ -39,7 +39,7 @@ io.sockets.on('connection', function(socket) {
 	});
 
 	socket.on('disconnect', function() {
-		socket.broadcast.emit('user disconnect', socket.authData.uid);
+		// socket.broadcast.emit('user disconnect', socket.authData.uid);
 	});
 
 	socket.on('create user', function(obj) {
