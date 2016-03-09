@@ -21,8 +21,17 @@ var numUsers = 0;
 // on/during connection
 io.sockets.on('connection', function(socket) {
 
-	var addedUser = false; // user not added yet
+	var authData = firebaseRef.getAuth();
 
+	authDataCallback(authData);
+
+	function authDataCallback(authData) {
+	  if (authData) {
+	    socket.emit('TEST TEST TEST', "User " + authData.uid + " is logged in with " + authData.provider);
+	  } else {
+	    socket.emit('TEST TEST TEST', "User is logged out");
+	  }
+	}
 
 	// show user is typing
 	socket.on('typing', function() {
@@ -89,7 +98,6 @@ io.sockets.on('connection', function(socket) {
 		  } 
 		  else {
 		  	var otherUsers = Object.keys(io.engine.clients);
-		  	socket.authData = authData;
 		  	var obj2 = {username: getName(authData), email: obj.email, url: authData.password.profileImageURL, uid: authData.uid};
 		  	socket.emit('login', obj2);
 		  	socket.broadcast.emit('user login', obj2);
