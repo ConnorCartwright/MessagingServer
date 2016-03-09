@@ -449,15 +449,16 @@ ul.chatLog {
 
 ul.chatLog>li.message {
     height: 34px;
-    line-height: 34px;
+    line-height: 36px;
     width: 100%;
 }
 
 ul.chatLog>li.message>span {
     display: inline-block;
-    margin-left: 12px;
-    width: 488px;
+    width: 446px;
+    margin-left: 10px;
     white-space: nowrap;
+    vertical-align: top;
 }
 
 ul.chatLog>li.message span.username {
@@ -483,6 +484,14 @@ ul.chatLog>li.message.consoleMessage.numUsers+li {
 
 ul.chatLog>li.message.consoleMessage>span {
     margin-left: 0;
+}
+
+li.message.chatMessage>img {
+    height: 26px;
+    margin-top: 4px;
+    margin-left: 12px;
+    border-radius: 20px;
+    display: inline-block;
 }
 
 div.messageInputDiv {

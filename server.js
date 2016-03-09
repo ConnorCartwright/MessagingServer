@@ -5,7 +5,7 @@ var io = require('socket.io')(server);
 var port = process.env.PORT || 5000;
 var Firebase = require('firebase');
 var firebaseRef = new Firebase("https://messagingserver.firebaseio.com/");
-var authData = firebaseRef.getAuth();
+var firebaseAuthData;
 
 // listen at the port specified
 server.listen(port, function() {
@@ -21,8 +21,17 @@ var numUsers = 0;
 // on/during connection
 io.sockets.on('connection', function(socket) {
 
-	var addedUser = false; // user not added yet
+	firebaseAuthData.getAuth();
 
+	authDataCallback(firebaseAuthData);
+
+	function authDataCallback(authData) {
+	  if (authData) {
+	    socket.emit('TEST TEST TEST', "User " + authData.uid + " is logged in with " + authData.provider);
+	  } else {
+	    socket.emit('TEST TEST TEST', "User is logged out");
+	  }
+	}
 
 	// show user is typing
 	socket.on('typing', function() {
@@ -144,7 +153,9 @@ io.sockets.on('connection', function(socket) {
 
 	socket.on('message', function(data) {
 		if (data.message.length > 0 ) {
-			io.sockets.in(data.room).emit('chat message', data);
+			socket.url = firebaseAuthData.password.profileImageURL;
+			var obj2 = {message: data.message, username: data.username, url: socket.url, room: data.room};
+			io.sockets.in(data.room).emit('chat message', obj2);
 		}
 	});
  
