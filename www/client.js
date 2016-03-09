@@ -46,12 +46,8 @@ $(function() {
 
   socket.on('chat message', function (data) {
     var chatLog  = $('div.chatWindow[data-roomname="' + data.room + '"] ul.chatLog');
-    var chatMessage = $('<li class="message chatMessage"></li>')
-    var image = $('<img src="' + data.url + '">');
-    var message = $('<span><span class="username">' + data.username + '</span>: ' + data.message + '</span>');
-    chatMessage.append(image);
-    chatMessage.append(message);
-    chatLog.append(chatMessage);
+    var message = $('<li class="message chatMessage"><span><span class="username">' + data.username + '</span>: ' + data.message + '</span></li>')
+    chatLog.append(message);
 
     var height = chatLog[0].scrollHeight;
     chatLog.scrollTop(height);
@@ -118,11 +114,6 @@ $(function() {
 
   socket.on('reset sent', function() {
     formContainerMessage('Password reset request sent!');
-  });
-
-  socket.on('TEST TEST TEST', function(message) {
-    console.log('MESSAAAGE:');
-    console.log(message);
   });
 
   socket.on('room joined', function (data) {
@@ -237,6 +228,12 @@ $(function() {
   // helper function to print a console message to chat 
   function printConsoleMessage(message) {
     var $message = $('<li class="message consoleMessage">' + message + '</li>');
+    $messages.append($message);
+  }
+
+  // helper function to print a chat message to chat 
+  function printMessage(data) {
+    var $message = $('<li class="message chatMessage""><span>' + data.username + ':</span> ' + data.message + '</li>');
     $messages.append($message);
   }
 
