@@ -39,6 +39,10 @@ $(function() {
     userIsTyping(data);
   });
 
+  socket.on('TEST TEST TEST', function(message) {
+    console.log(message);
+  });
+
   // kill the typing message on stop typing
   socket.on('stop typing', function (data) {
     removeChatTyping(data);
