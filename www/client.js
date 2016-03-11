@@ -17,6 +17,21 @@ $(function() {
   var $menuPage = $('.page.menu'); // The chatroom page
   var $chatPage = $('.page.chat'); // The chatroom page
 
+  var firebaseRef = new Firebase("https://messagingserver.firebaseio.com");
+
+  var authData = firebaseRef.getAuth();
+
+  if (authData) {
+    console.log("User " + authData.uid + " is logged in with " + authData.provider);
+    var provider = authData.provider;
+    var obj = {username: getName(authData), url: authData.password.profileImageURL, uid: authData.uid};
+    userLoggedIn(obj);
+  } else {
+    console.log("User is logged out");
+  }
+
+  $('div#sidebar').height($(window).height() - 50)
+
   socket.on('user joined', function (data) {
     printConsoleMessage('<span class="username">' + data.username + '</span>' + ' joined the room.');
   });
@@ -61,23 +76,33 @@ $(function() {
     formContainerMessage('User Account created!');
   });
 
-  socket.on('login', function (data) {
+  function userLoggedIn(data) {
     username = data.username;
-    email = data.email;
     url = data.url;
+    socket.emit('user logged in', data);
     $('div.logoTopBar').append('<span class="usernameGreeting">Welcome ' + data.username + '!');
     $('div#sidebar').prepend('<div class="profilePicture"><img class="displayPicture" src="' + url + '" alt="Profile Picture"></div>');
     loginSuccess();
-  });
+  }
 
   socket.on('user login', function (data) {
-    var friend = $('<li class="friend" data-userid="' + data.uid +'"></li>');
-    var image = ('<img class="friendImage" src="' + data.url + '" alt="O">');
-    var name = $('<span>' + data.username + '</span>');
-    friend.append(image);
-    friend.append(name);
+    if ($('li.friend[data-userid="' + data.uid + '"').length) {
+      // already displayed
+    }
+    else {
+      var friend = $('<li class="friend" data-userid="' + data.uid +'"></li>');
+      var image = ('<img class="friendImage" src="' + data.url + '" alt="O">');
+      var name = $('<span>' + data.username + '</span>');
+      friend.append(image);
+      friend.append(name);
 
-    $('ul.friendsList').append(friend);
+      $('ul.friendsList').append(friend); 
+    }
+
+  });
+
+  socket.on('user logout', function (data) {
+    $('li.friend[data-userid="' + data.uid + '"').remove();
   });
 
   socket.on('rebind login', function() {
@@ -93,23 +118,35 @@ $(function() {
   });
 
   socket.on('email invalid', function (data) {
-    $('div.formContainer.posting input.emailInput').addClass('error');
+    emailInvalid();
   });
+
+  function emailInvalid() {
+    $('div.formContainer.posting input.emailInput').addClass('error');  
+  }
 
   socket.on('email taken', function (data) {
     $('div.formContainer.posting input.emailInput').after('<div class="errorText"><span>Email already in use!</span></div>');
     $('div.formContainer.posting').removeClass('posting');
   });
 
-  socket.on('password wrong', function (data) {
-    $('div.formContainer.login input.passwordInput').after('<div class="errorText"><span>Wrong password</span></div>');
-    $('div.formContainer.login').removeClass('posting');
+  socket.on('password wrong', function () {
+    passwordwrong();
   });
 
+  function passwordWrong() {
+    $('div.formContainer.login input.passwordInput').after('<div class="errorText"><span>Wrong password</span></div>');
+    $('div.formContainer.login').removeClass('posting');
+  }
+
   socket.on('email not recognised', function (data) {
+    emailNotReocgnised();
+  });
+
+  function emailNotRecognised() {
     $('div.formContainer.posting input.emailInput').after('<div class="errorText"><span>Email not registered.</span></div>');
     $('div.formContainer.posting').removeClass('posting');
-  });
+  }
 
   socket.on('generic error', function (data) {
     $('div.formContainer.posting input.emailInput').before('<div class="errorText upper"><span>An error occurred. Please try again later.</span></div>');
@@ -297,6 +334,15 @@ $(function() {
     });
   }
 
+  function logout() {
+    $menuPage.fadeOut(600, function() {
+      $loginPage.fadeIn(600);
+      $('div.logoTopBar>img.menuBars').fadeOut(400);
+      $('div.menuContent').css('margin-right', 0);
+      $("img.menuBars").trigger("click");
+    });
+  }
+
   // check email is valid
   function validateEmail(email) {
     var patt = new RegExp("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
@@ -386,8 +432,55 @@ $(function() {
 
     $('div.formContainer.login').addClass('posting');
 
-    var obj = {email: email.val(), password: password.val()};
-    socket.emit('login', obj);
+     firebaseRef.authWithPassword({
+       email    : email.val(),
+       password : password.val()
+     }, function(error, authData) {
+       if (error) {
+         rebindLogin();
+         switch (error.code) {
+           case "INVALID_EMAIL":
+             invalidEmail();
+             break;
+           case "INVALID_PASSWORD":
+             passwordWrong();
+             break;
+           case "INVALID_USER":
+             emailNotRecognised();
+             break;
+           default:
+             socket.emit('generic error');
+         }
+       } 
+       else {
+        console.log("Authenticated successfully with payload:", authData);
+        var obj = {username: getName(authData), url: authData.password.profileImageURL, uid: authData.uid};
+        userLoggedIn(obj);
+       }
+     });
+  }
+
+  function getName(authData) {
+    switch(authData.provider) {
+       case 'password':
+         return authData.password.email.replace(/@.*/, '');
+       case 'twitter':
+         return authData.twitter.displayName;
+       case 'facebook':
+         return authData.facebook.displayName;
+    }
+  }
+
+    // find a suitable name based on the meta info given by each provider
+  function getEmail(authData) {
+    switch(authData.provider) {
+       case 'password':
+         return authData.password.email;
+       case 'twitter':
+         return authData.twitter.displayName;
+       case 'facebook':
+         return authData.facebook.email
+    }
   }
 
   // function to handle creating an account
@@ -487,5 +580,13 @@ $(function() {
       handleJoinRoom(roomInput);
     });
   }
+
+  $('div.userLogout').on('click', function() {
+    logout();
+    firebaseRef.unauth();
+
+    var obj = {username: getName(authData), url: authData.password.profileImageURL, uid: authData.uid};
+    socket.emit('user logged out', obj);
+  });
 
 });

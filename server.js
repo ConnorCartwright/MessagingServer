@@ -21,18 +21,6 @@ var numUsers = 0;
 // on/during connection
 io.sockets.on('connection', function(socket) {
 
-	var authData = firebaseRef.getAuth();
-
-	authDataCallback(authData);
-
-	function authDataCallback(authData) {
-	  if (authData) {
-	    socket.emit('TEST TEST TEST', "User " + authData.uid + " is logged in with " + authData.provider);
-	  } else {
-	    socket.emit('TEST TEST TEST', "User is logged out");
-	  }
-	}
-
 	// show user is typing
 	socket.on('typing', function() {
 		socket.broadcast.emit('typing', {
@@ -75,34 +63,12 @@ io.sockets.on('connection', function(socket) {
 		});
 	});
 
-	socket.on('login', function(obj) {
-		firebaseRef.authWithPassword({
-		  email    : obj.email,
-		  password : obj.password
-		}, function(error, authData) {
-		  if (error) {
-		  	socket.emit('rebind login');
-		    switch (error.code) {
-		      case "INVALID_EMAIL":
-		      	socket.emit('email invalid');
-		        break;
-		      case "INVALID_PASSWORD":
-		      	socket.emit('password wrong');
-		        break;
-		      case "INVALID_USER":
-		      	socket.emit('email not recognised');
-		        break;
-		      default:
-		        socket.emit('generic error');
-		    }
-		  } 
-		  else {
-		  	var otherUsers = Object.keys(io.engine.clients);
-		  	var obj2 = {username: getName(authData), email: obj.email, url: authData.password.profileImageURL, uid: authData.uid};
-		  	socket.emit('login', obj2);
-		  	socket.broadcast.emit('user login', obj2);
-		  }
-		});
+	socket.on('user logged in', function(obj) {
+		socket.broadcast.emit('user login', obj);
+	});
+
+	socket.on('user logged out', function(obj) {
+		socket.broadcast.emit('user logout', obj);
 	});
 
 	socket.on('password reset', function(email) {
